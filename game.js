@@ -131,6 +131,7 @@ function showEvent() {
 }
 
 function choose(i) {
+  const readingPosition = window.scrollY;
   const c=events[state.current].choices[i], effects={...c[1]}; let success=true;
   if(c[3]!==undefined) { const bonus=(state.stats.spirit-35)/200; success=rng()<c[3]+bonus; if(!success) Object.keys(effects).forEach(k=>{ effects[k]=k==="pitch"?null:Math.round(effects[k]*-.45); }); }
   const parts=[];
@@ -142,13 +143,17 @@ function choose(i) {
   $("#choices").innerHTML=""; $("#resultBox").innerHTML=`<strong>${success?'結果':'事與願違'}</strong><br>${success?c[2]:"結果沒有如你預期，但失敗也成了往後的養分。"}<br>${parts.join("")}`; $("#resultBox").classList.remove("hidden"); $("#nextBtn").classList.remove("hidden");
   if((effects.fame||0)>=6 || (effects.spirit||0)>=6) { const mark=events[state.current].title; if(!state.timeline.includes(mark)) state.timeline.push(mark); }
   beep(success?520:220); render(); save();
+  requestAnimationFrame(()=>window.scrollTo({top:readingPosition,behavior:"auto"}));
 }
 
 function nextTurn() {
   state.turn++;
   if(state.turn>=4) { state.turn=0; state.chapter++; state.timeline.push(chapters[Math.min(state.chapter,4)]?.name||"生涯終章"); state.stats.health=Math.min(99,state.stats.health+5); }
   if(state.chapter>=5) return endGame();
-  render(); showEvent(); window.scrollTo({top:0,behavior:"smooth"}); beep(390);
+  const readingPosition=window.scrollY;
+  render(); showEvent();
+  requestAnimationFrame(()=>window.scrollTo({top:readingPosition,behavior:"auto"}));
+  beep(390);
 }
 
 function overallScore() { const s=state.stats; return Math.round((s.power+s.contact+s.speed+s.fielding+s.spirit+s.health)/6); }
