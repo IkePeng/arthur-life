@@ -6,7 +6,8 @@ const birdRoster = {
   "36": { src: "assets/bird-sidearm-36.webp?v=4", label: "黃綠側投" },
   "99": { src: "assets/bird-closer-99.webp?v=4", label: "珊瑚終結者" },
   "55": { src: "assets/bird-power-55.webp?v=4", label: "橘胖力量投手" },
-  "77": { src: "assets/bird-calm-77.webp?v=4", label: "紫胖沉著投手" }
+  "77": { src: "assets/bird-calm-77.webp?v=4", label: "紫胖沉著投手" },
+  "88": { src: "assets/bird-heavy-88.webp?v=2", label: "深藍重砲投手" }
 };
 let selectedBird = "18";
 
