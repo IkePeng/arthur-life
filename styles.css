@@ -388,6 +388,20 @@ label>span{color:#214c80}.start-card>.primary-btn{position:absolute;z-index:6;ri
   .story-route div { grid-template-columns: 30px 78px 1fr; }
 }
 
+/* v26 — desktop stability / clean field / solid characters */
+.scoreboard { display: none !important; }
+.avatar,.hero-player { isolation:isolate; }
+.avatar img,.hero-player img { opacity:1!important; filter:none; }
+@media (min-width: 821px) {
+  .shell { width:min(1180px,calc(100% - 48px)); }
+  .game-layout { grid-template-columns:300px minmax(0,1fr); gap:22px; }
+  .story-column,.event-card,.match-card,.skill-card { min-width:0; }
+  .start-card { min-height:660px; max-height:760px; }
+  .setup-grid { grid-template-columns:minmax(0,1.25fr) minmax(260px,1fr); right:32px; }
+  .hero-copy { max-width:520px; }
+  .hero-player { right:5%; width:min(38%,390px); }
+}
+
 /* v8 — 原創街頭棒球 Logo 與塗鴉鳥投手 */
 .brand {
   width: min(520px, calc(100% - 58px));
