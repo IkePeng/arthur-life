@@ -1,13 +1,13 @@
 const $ = (s) => document.querySelector(s);
 
 const birdRoster = {
-  "18": { src: "assets/bird-pitcher.webp?v=4", label: "綠色王牌" },
-  "21": { src: "assets/bird-lefty-21.webp?v=4", label: "藍色左投" },
-  "36": { src: "assets/bird-sidearm-36.webp?v=4", label: "黃綠側投" },
-  "99": { src: "assets/bird-closer-99.webp?v=4", label: "珊瑚終結者" },
-  "55": { src: "assets/bird-power-55.webp?v=4", label: "橘胖力量投手" },
-  "77": { src: "assets/bird-calm-77.webp?v=4", label: "紫胖沉著投手" },
-  "88": { src: "assets/bird-heavy-88.webp?v=2", label: "深藍重砲投手" }
+  "18": { src:"assets/bird-pitcher.webp?v=4", label:"資本雄厚", bonus:"資金充裕 · 頂級設備 · 訓練開銷減免", money:1800, stats:{contact:4,health:4}, training:1.12, cost:0.5 },
+  "21": { src:"assets/bird-lefty-21.webp?v=4", label:"一招入魂", bonus:"指定武器接近滿級 · 其他基礎能力較低", stats:{speed:55,power:8,contact:-6,fielding:-5,health:-4}, pitch:"160km 火球", special:"火球入魂" },
+  "36": { src:"assets/bird-sidearm-36.webp?v=4", label:"天賦異稟", bonus:"能力上限提高 · 訓練成長加成 · 覺醒爆發", stats:{power:7,contact:7,speed:7,fielding:7,health:5}, training:1.35, cap:110, special:"天賦覺醒" },
+  "99": { src:"assets/bird-closer-99.webp?v=4", label:"名門之後", bonus:"高人氣與聲望 · 傳奇導師 · 球探青睞", fame:18, fans:3800, stats:{spirit:6,contact:4}, scout:.16, special:"傳奇人脈" },
+  "55": { src:"assets/bird-power-55.webp?v=4", label:"草莽野草", bonus:"逆境爆發 · 體力極佳 · 在地死忠球迷", fans:900, stats:{health:18,spirit:12,power:4}, adversity:1.35, special:"野草韌性" },
+  "77": { src:"assets/bird-calm-77.webp?v=4", label:"強運之子", bonus:"關鍵時刻強化 · 正面偶遇機率提高", stats:{spirit:8}, luck:.14, special:"命運眷顧" },
+  "88": { src:"assets/bird-heavy-88.webp?v=2", label:"世故玩家", bonus:"合約加成 · 商業贊助 · 公關維持人氣", money:300, fame:7, fans:1200, stats:{contact:5,spirit:5}, business:1.55, special:"談判高手" }
 };
 let selectedBird = "18";
 
@@ -108,12 +108,7 @@ const events = [
 
 let state;
 let soundOn = true;
-let rng = Math.random;
-
-function xmur3(str) { let h=1779033703^str.length; for(let i=0;i<str.length;i++) h=Math.imul(h^str.charCodeAt(i),3432918353),h=h<<13|h>>>19; return () => { h=Math.imul(h^h>>>16,2246822507); h=Math.imul(h^h>>>13,3266489909); return (h^h>>>16)>>>0; }; }
-function mulberry32(a) { return () => { let t=a+=0x6D2B79F5; t=Math.imul(t^t>>>15,t|1); t^=t+Math.imul(t^t>>>7,t|61); return ((t^t>>>14)>>>0)/4294967296; }; }
-function setRng(seed) { rng = mulberry32(xmur3(seed)()); }
-function randomSeed() { return Math.random().toString(36).slice(2,10); }
+const rng = Math.random;
 
 function beep(freq=420) {
   if (!soundOn) return;
@@ -121,13 +116,14 @@ function beep(freq=420) {
 }
 
 function newState() {
-  return { name: $("#playerName").value.trim()||"無名小將", position:"投手", bird:selectedBird, seed:$("#seedInput").value||randomSeed(), chapter:0, turn:0, used:[], pitches:["四縫線直球"], stats:{power:30,contact:28,speed:32,fielding:24,spirit:35,health:72}, fame:0,money:0,fans:12,timeline:["加入校隊"] };
+  const origin=birdRoster[selectedBird], stats={power:30,contact:28,speed:32,fielding:24,spirit:35,health:72};
+  Object.entries(origin.stats||{}).forEach(([k,v])=>stats[k]+=v);
+  return { name:$("#playerName").value.trim()||"無名小將", position:"投手", bird:selectedBird, origin:selectedBird, chapter:0, turn:0, used:[], pitches:["四縫線直球",...(origin.pitch?[origin.pitch]:[])], special:origin.special?[origin.special]:[], stats, fame:origin.fame||0, money:origin.money||0, fans:origin.fans||12, timeline:[`出生背景：${origin.label}`,"加入校隊"] };
 }
 
 function startGame(customState) {
   state = customState || newState();
-  state.position="投手"; state.pitches=state.pitches||["四縫線直球"]; state.bird=birdRoster[state.bird]?state.bird:"18";
-  setRng(state.seed);
+  state.position="投手"; state.pitches=state.pitches||["四縫線直球"]; state.bird=birdRoster[state.bird]?state.bird:"18"; state.origin=state.origin||state.bird; state.special=state.special||[];
   $("#startScreen").classList.add("hidden"); $("#endingScreen").classList.add("hidden"); $("#gameScreen").classList.remove("hidden");
   save(); render(); showEvent();
 }
@@ -143,12 +139,17 @@ function showEvent() {
 
 function choose(i) {
   const readingPosition = window.scrollY;
-  const c=events[state.current].choices[i], effects={...c[1]}; let success=true;
-  if(c[3]!==undefined) { const bonus=(state.stats.spirit-35)/200; success=rng()<c[3]+bonus; if(!success) Object.keys(effects).forEach(k=>{ effects[k]=k==="pitch"?null:Math.round(effects[k]*-.45); }); }
+  const c=events[state.current].choices[i], effects={...c[1]}, origin=birdRoster[state.origin]; let success=true;
+  const keyMoment=/滿壘|決賽|選秀|初登板|冠軍|最後|危機/.test(events[state.current].title+events[state.current].tag);
+  if(c[3]!==undefined) { const spiritBonus=(state.stats.spirit-35)/200, luckBonus=(origin.luck||0)+(origin.scout&&/球探|選秀/.test(events[state.current].title)?origin.scout:0); success=rng()<Math.min(.96,c[3]+spiritBonus+luckBonus); if(!success) Object.keys(effects).forEach(k=>{ effects[k]=k==="pitch"?null:Math.round(effects[k]*-.45); }); }
+  if(success) Object.keys(effects).forEach(k=>{ if(k in state.stats&&effects[k]>0) effects[k]=Math.round(effects[k]*(origin.training||1)*(origin.adversity&&state.chapter<3?origin.adversity:1)); });
+  if(success&&origin.business) { if(effects.money>0) effects.money=Math.round(effects.money*origin.business); if(effects.fame<0) effects.fame=Math.ceil(effects.fame*.4); }
+  if(effects.money<0&&origin.cost) effects.money=Math.round(effects.money*origin.cost);
+  if(success&&origin.luck&&keyMoment) { effects.fame=(effects.fame||0)+3; effects.spirit=(effects.spirit||0)+2; }
   const parts=[];
   for(const [k,v] of Object.entries(effects)) {
     if(k==="pitch") { if(v&&!state.pitches.includes(v)) state.pitches.push(v); if(v) parts.push(`<span class="delta">習得球種：${v}</span>`); continue; }
-    if(k in state.stats) state.stats[k]=Math.max(0,Math.min(99,state.stats[k]+v)); else state[k]=Math.max(0,(state[k]||0)+v);
+    if(k in state.stats) state.stats[k]=Math.max(0,Math.min(origin.cap||99,state.stats[k]+v)); else state[k]=Math.max(0,(state[k]||0)+v);
     parts.push(`<span class="delta ${v<0?'negative':''}">${statLabels[k]||({fame:'名聲',money:'資金',fans:'粉絲'}[k])} ${v>0?'+':''}${v}</span>`);
   }
   $("#choices").innerHTML=""; $("#resultBox").innerHTML=`<strong>${success?'結果':'事與願違'}</strong><br>${success?c[2]:"結果沒有如你預期，但失敗也成了往後的養分。"}<br>${parts.join("")}`; $("#resultBox").classList.remove("hidden"); $("#nextBtn").classList.remove("hidden");
@@ -171,10 +172,10 @@ function overallScore() { const s=state.stats; return Math.round((s.power+s.cont
 function grade(n) { return n>=82?'S':n>=70?'A':n>=57?'B':n>=44?'C':n>=32?'D':'E'; }
 
 function render() {
-  const ch=chapters[state.chapter], bird=birdRoster[state.bird]; $("#displayName").textContent=state.name; $("#playerPosition").textContent=`${state.position} · ${bird.label}`; $("#careerLine").textContent=`${ch.age} 歲 · ${ch.place}`; $("#avatar").innerHTML=`<img src="${bird.src}" alt="${bird.label}">`;
+  const ch=chapters[state.chapter], bird=birdRoster[state.bird]; $("#displayName").textContent=state.name; $("#playerPosition").textContent=`${state.position} · ${bird.label}`; $("#careerLine").textContent=`${ch.age} 歲 · ${ch.place} · ${bird.bonus}`; $("#avatar").innerHTML=`<img src="${bird.src}" alt="${bird.label}">`;
   $("#overall").textContent=grade(overallScore());
-  $("#stats").innerHTML=Object.entries(state.stats).map(([k,v])=>`<div class="stat"><div class="stat-head"><span>${statLabels[k]}</span><b>${v}</b></div><div class="stat-track"><i style="width:${v}%"></i></div></div>`).join("");
-  $("#pitchList").innerHTML=state.pitches.map((p,i)=>`<span class="pitch-chip ${i===state.pitches.length-1&&state.pitches.length>1?'new':''}">${p}</span>`).join(""); $("#pitchCount").textContent=`${state.pitches.length} / 8`;
+  $("#stats").innerHTML=Object.entries(state.stats).map(([k,v])=>`<div class="stat"><div class="stat-head"><span>${statLabels[k]}</span><b>${v}</b></div><div class="stat-track"><i style="width:${Math.min(100,v)}%"></i></div></div>`).join("");
+  $("#pitchList").innerHTML=[...(state.special||[]).map(x=>`<span class="pitch-chip origin-chip">★ ${x}</span>`),...state.pitches.map((p,i)=>`<span class="pitch-chip ${i===state.pitches.length-1&&state.pitches.length>1?'new':''}">${p}</span>`)].join(""); $("#pitchCount").textContent=`${state.pitches.length} / 8`;
   $("#fameValue").textContent=state.fame; $("#moneyValue").textContent=state.money+" 萬"; $("#fansValue").textContent=state.fans>=10000?(state.fans/10000).toFixed(1)+"萬":state.fans;
   $("#chapterLabel").textContent=`第${['一','二','三','四','五'][state.chapter]}章`; $("#seasonLabel").textContent=ch.name; $("#weekLabel").textContent=`第 ${state.turn+1} / 4 回合`; $("#progressBar").style.width=`${(state.turn+1)/4*100}%`;
   $("#timelineItems").innerHTML=state.timeline.slice(-8).map(x=>`<span class="timeline-item">● ${x}</span>`).join(""); $("#achievementCount").textContent=`${Math.max(0,state.timeline.length-1)} 個里程碑`;
@@ -193,13 +194,14 @@ function endGame() {
 }
 
 function save() { localStorage.setItem("baseballLifeSave",JSON.stringify(state)); }
-function resetToStart() { localStorage.removeItem("baseballLifeSave"); state=null; $("#gameScreen").classList.add("hidden"); $("#endingScreen").classList.add("hidden"); $("#startScreen").classList.remove("hidden"); $("#seedInput").value=randomSeed(); window.scrollTo({top:0,behavior:"smooth"}); }
+function resetToStart() { localStorage.removeItem("baseballLifeSave"); state=null; $("#gameScreen").classList.add("hidden"); $("#endingScreen").classList.add("hidden"); $("#startScreen").classList.remove("hidden"); window.scrollTo({top:0,behavior:"smooth"}); }
 
-$("#randomSeed").addEventListener("click",()=>$("#seedInput").value=randomSeed());
+function updateOriginPreview() { const origin=birdRoster[selectedBird]; $("#originName").textContent=origin.label; $("#originBonus").textContent=origin.bonus; }
 document.querySelectorAll(".bird-option").forEach(btn=>btn.addEventListener("click",()=>{
   selectedBird=btn.dataset.bird;
   document.querySelectorAll(".bird-option").forEach(option=>{ const active=option===btn; option.classList.toggle("active",active); option.setAttribute("aria-pressed",String(active)); });
   $(".hero-player img").src=birdRoster[selectedBird].src;
+  updateOriginPreview();
   beep(460);
 }));
 $("#startBtn").addEventListener("click",()=>startGame());
@@ -211,7 +213,7 @@ $("#soundBtn").addEventListener("click",e=>{soundOn=!soundOn;e.currentTarget.cla
 $("#storyBtn").addEventListener("click",()=>$("#storyDialog").showModal());
 $("#closeStory").addEventListener("click",()=>$("#storyDialog").close());
 $("#storyStart").addEventListener("click",()=>{$("#storyDialog").close();startGame();});
-$("#shareBtn").addEventListener("click",async()=>{ const text=`⚾ 逸群的野球｜${state.name}\n${state.position} · 生涯評價 ${grade(overallScore())}\n名聲 ${state.fame}｜球迷 ${state.fans}\n命運種子：${state.seed}`; try{await navigator.clipboard.writeText(text);$("#copyHint").textContent="生涯卡已複製！";}catch{$("#copyHint").textContent=text;} });
+$("#shareBtn").addEventListener("click",async()=>{ const text=`⚾ 逸群的野球｜${state.name}\n${state.position} · ${birdRoster[state.origin].label}\n生涯評價 ${grade(overallScore())}\n名聲 ${state.fame}｜球迷 ${state.fans}`; try{await navigator.clipboard.writeText(text);$("#copyHint").textContent="生涯卡已複製！";}catch{$("#copyHint").textContent=text;} });
 
-const params=new URLSearchParams(location.search); $("#seedInput").value=params.get("seed")||randomSeed();
+updateOriginPreview();
 if(localStorage.getItem("baseballLifeSave")) $("#continueBtn").classList.remove("hidden");
