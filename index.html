@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Zilla+Slab:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=4" />
+  <link rel="stylesheet" href="styles.css?v=5" />
 </head>
 <body>
   <div class="grain" aria-hidden="true"></div>
@@ -29,7 +29,7 @@
       <div class="hero-player" aria-hidden="true">
         <div class="player-cap"><i>Y</i></div>
         <div class="player-face"><i></i><i></i><b></b></div>
-        <div class="player-body">7</div>
+        <div class="player-body">18</div>
       </div>
       <div class="hero-copy">
         <p class="tag">成功模式・現在開打！</p>
@@ -44,11 +44,8 @@
         </label>
         <label>
           <span>守備位置</span>
-          <select id="position">
-            <option value="投手">投手</option>
-            <option value="捕手">捕手</option>
-            <option value="內野手" selected>內野手</option>
-            <option value="外野手">外野手</option>
+          <select id="position" aria-label="守備位置">
+            <option value="投手" selected>投手｜先發右投</option>
           </select>
         </label>
         <label class="seed-field">
@@ -64,16 +61,31 @@
       <div class="mode-dock" aria-hidden="true">
         <span>🏋️<b>練習</b></span><span>💤<b>休息</b></span><span>📈<b>能力</b></span><span>⚾<b>比賽</b></span>
       </div>
+      <button id="storyBtn" class="story-btn" type="button">查看投手篇故事線</button>
       <p class="fine-print">遊戲會自動保存在此裝置</p>
       <button id="continueBtn" class="text-btn hidden" type="button">繼續上次的人生</button>
     </section>
+
+    <dialog id="storyDialog" class="story-dialog">
+      <button id="closeStory" class="dialog-close" type="button" aria-label="關閉">×</button>
+      <p class="eyebrow">PITCHER STORY</p>
+      <h2>逸群的投手之路</h2>
+      <div class="story-route">
+        <div><b>01</b><span>無名投手</span><small>爭取校隊最後一個名額</small></div>
+        <div><b>02</b><span>夏日王牌</span><small>帶領球隊挑戰全國舞台</small></div>
+        <div><b>03</b><span>選秀邊緣</span><small>在傷勢與夢想間做選擇</small></div>
+        <div><b>04</b><span>職業一軍</span><small>證明自己能站上投手丘</small></div>
+        <div><b>05</b><span>最後一球</span><small>決定留下怎樣的棒球人生</small></div>
+      </div>
+      <button id="storyStart" class="primary-btn" type="button">開始投手篇</button>
+    </dialog>
 
     <section id="gameScreen" class="game-layout hidden">
       <aside class="player-panel card">
         <div class="player-id">
           <div id="avatar" class="avatar">7</div>
           <div>
-            <p id="playerPosition" class="eyebrow">內野手</p>
+            <p id="playerPosition" class="eyebrow">投手</p>
             <h2 id="displayName">無名小將</h2>
             <p id="careerLine">15 歲 · 青葉中學</p>
           </div>
@@ -85,6 +97,11 @@
         </div>
 
         <div id="stats" class="stats"></div>
+
+        <div class="pitch-book">
+          <div class="pitch-book-head"><span>球種庫</span><b id="pitchCount">1 / 8</b></div>
+          <div id="pitchList" class="pitch-list"></div>
+        </div>
 
         <div class="meta-stats">
           <div><span>名聲</span><b id="fameValue">0</b></div>
@@ -102,7 +119,7 @@
             <strong id="seasonLabel">菜鳥的夏天</strong>
           </div>
           <div class="progress-wrap">
-            <span id="weekLabel">第 1 / 8 回合</span>
+            <span id="weekLabel">第 1 / 4 回合</span>
             <div class="progress"><i id="progressBar"></i></div>
           </div>
         </div>
@@ -145,6 +162,6 @@
       <p id="copyHint" class="fine-print"></p>
     </section>
   </main>
-  <script src="game.js?v=4"></script>
+  <script src="game.js?v=5"></script>
 </body>
 </html>
