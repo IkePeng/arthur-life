@@ -155,10 +155,28 @@ function choose(i) {
     if(k in state.stats) state.stats[k]=Math.max(0,Math.min(origin.cap||99,state.stats[k]+v)); else state[k]=Math.max(0,(state[k]||0)+v);
     parts.push(`<span class="delta ${v<0?'negative':''}">${statLabels[k]||({fame:'名聲',money:'資金',fans:'粉絲'}[k])} ${v>0?'+':''}${v}</span>`);
   }
-  $("#choices").innerHTML=""; $("#resultBox").innerHTML=`<strong>${success?'結果':'事與願違'}</strong><br>${success?c[2]:"結果沒有如你預期，但失敗也成了往後的養分。"}<br>${parts.join("")}`; $("#resultBox").classList.remove("hidden"); $("#nextBtn").classList.remove("hidden");
+  const setback=rollSetback("story");
+  $("#choices").innerHTML=""; $("#resultBox").innerHTML=`<strong>${success?'結果':'事與願違'}</strong><br>${success?c[2]:"結果沒有如你預期，但失敗也成了往後的養分。"}<br>${parts.join("")}${setback?`<div class="setback"><b>⚠ 負面事件｜${setback.title}</b><br>${setback.text}</div>`:""}`; $("#resultBox").classList.remove("hidden"); $("#nextBtn").classList.remove("hidden");
   if((effects.fame||0)>=6 || (effects.spirit||0)>=6) { const mark=events[state.current].title; if(!state.timeline.includes(mark)) state.timeline.push(mark); }
   beep(success?520:220); render(); save();
   requestAnimationFrame(()=>window.scrollTo({top:readingPosition,behavior:"auto"}));
+}
+
+function applyStatLoss(loss) {
+  const parts=[]; for(const [k,v] of Object.entries(loss)){state.stats[k]=Math.max(0,state.stats[k]-v);parts.push(`${statLabels[k]} −${v}`);} return parts.join("、");
+}
+function rollSetback(context="story") {
+  const origin=birdRoster[state.origin], healthRisk=Math.max(0,(70-state.stats.health)/230), workload=context==="match"?.08:0;
+  let chance=.18+healthRisk+workload-(origin.adversity?.045:0)-(origin.luck?.04:0); if(rng()>chance)return null;
+  const pool=[
+    ()=>({title:"疲勞累積",text:`連續訓練讓動作走樣。${applyStatLoss({health:4,power:2})}`}),
+    ()=>({title:"手指起水泡",text:`放球點受到影響。${applyStatLoss({contact:4,health:2})}`}),
+    ()=>({title:"投球低潮",text:`你突然找不到原本的節奏。${applyStatLoss({spirit:4,fielding:3})}`}),
+    ()=>({title:"球探評價下修",text:`這段表現被記進報告。名聲 −3`,meta:state.fame=Math.max(0,state.fame-3)}),
+    ()=>{const removable=state.pitches.filter(p=>p!=="四縫線直球");if(!removable.length)return {title:"球感消失",text:`暫時失去變化球手感。${applyStatLoss({fielding:5})}`};const p=removable[Math.floor(rng()*removable.length)];state.pitches=state.pitches.filter(x=>x!==p);return {title:"忘記球種",text:`長期沒有掌握 ${p} 的手感，球種庫失去「${p}」。`};},
+    ()=>{const severe=rng()<Math.max(.12,(65-state.stats.health)/100);return severe?{title:"肩肘傷勢",text:`你必須面對漫長復健。${applyStatLoss({health:12,speed:5,power:4})}`}:{title:"輕微拉傷",text:`身體發出警告。${applyStatLoss({health:7,speed:2})}`};}
+  ];
+  const event=pool[Math.floor(rng()*pool.length)](); state.timeline.push(`負面事件：${event.title}`); return event;
 }
 
 function nextTurn() {
@@ -203,12 +221,13 @@ function pitchInning(pitch) {
 function continueMatch() { if(state.match.inning>state.match.total) finishMatch(); else renderMatch(); }
 function finishMatch() {
   const m=state.match; if(m.team===m.opp)m.team+=rng()<.58?1:0; const won=m.team>m.opp;
-  state.skillPoints=Math.max(2,3+m.scoreless+(won?2:0)-Math.min(2,m.runs)); state.skillAllocation={}; state.phase="skills";
+  const setback=rollSetback("match"); state.lastMatchSetback=setback; state.skillPoints=Math.max(2,3+m.scoreless+(won?2:0)-Math.min(2,m.runs)-(setback?1:0)); state.skillAllocation={}; state.phase="skills";
   state.fame+=won?4:1; state.fans+=won?500:120; state.timeline.push(`${chapters[state.chapter].name}：${won?"勝投":"完成登板"}（${m.total}局失${m.runs}分）`);
   showSkills(); render(); save();
 }
 function showSkills() {
-  $("#eventCard").classList.add("hidden"); $("#matchCard").classList.add("hidden"); $("#skillCard").classList.remove("hidden"); renderSkills();
+  $("#eventCard").classList.add("hidden"); $("#matchCard").classList.add("hidden"); $("#skillCard").classList.remove("hidden");
+  $("#skillSummary").innerHTML=`本場獲得 <b id="skillPointsValue">${state.skillPoints}</b> 點，分配完成後才能進入下一章。${state.lastMatchSetback?`<span class="setback match-setback"><b>⚠ 賽後負面事件｜${state.lastMatchSetback.title}</b><br>${state.lastMatchSetback.text}</span>`:""}`; renderSkills();
 }
 function renderSkills() {
   const used=Object.values(state.skillAllocation||{}).reduce((a,b)=>a+b,0), remaining=state.skillPoints-used; $("#skillPointsValue").textContent=remaining;
@@ -219,7 +238,7 @@ function renderSkills() {
 function confirmSkills() {
   const remaining=state.skillPoints-Object.values(state.skillAllocation).reduce((a,b)=>a+b,0); if(remaining)return;
   const cap=birdRoster[state.origin].cap||99; Object.entries(state.skillAllocation).forEach(([k,v])=>state.stats[k]=Math.min(cap,state.stats[k]+v));
-  state.chapter++; state.turn=0; state.phase="event"; state.match=null; state.stats.health=Math.min(cap,state.stats.health+5);
+  state.chapter++; state.turn=0; state.phase="event"; state.match=null; state.lastMatchSetback=null; state.stats.health=Math.min(cap,state.stats.health+5);
   $("#skillCard").classList.add("hidden"); $("#eventCard").classList.remove("hidden"); if(state.chapter>=5)return endGame(); render();showEvent();save();
 }
 
