@@ -527,6 +527,10 @@ label>span{color:#214c80}.start-card>.primary-btn{position:absolute;z-index:6;ri
 .origin-summary strong { color: #d35412; font-size: 19px; }
 .origin-summary small { font-size: 10px; line-height: 1.35; }
 .origin-chip { color: #8b3700; background: linear-gradient(#fff3a5,#ffbe36); border-color: #d86713; }
+.random-origin { justify-content: center; pointer-events: none; }
+.random-origin .bird-option { width: 112px; height: 116px; grid-template-rows: 88px 21px; border-radius: 46% 46% 18px 18px; }
+.random-origin .bird-option img { width: 98px; height: 91px; }
+.random-origin .bird-option b { font-size: 11px; }
 
 @media (max-width: 600px) {
   .brand { width: calc(100% - 48px); min-height: 82px; padding: 5px 16px 13px 7px; margin-bottom: 2px; gap: 7px; }
@@ -547,6 +551,9 @@ label>span{color:#214c80}.start-card>.primary-btn{position:absolute;z-index:6;ri
   .mode-dock .bird-option b { font-size: 7px; letter-spacing: -.04em; }
   .origin-summary { min-height: 66px; padding: 8px 11px; }
   .origin-summary strong { font-size: 17px; }
+  .random-origin { max-width: 150px; }
+  .random-origin .bird-option { width: 94px; height: 100px; grid-template-rows: 74px 19px; }
+  .random-origin .bird-option img { width: 82px; height: 77px; }
 }
 
 @media (max-width: 360px) {
