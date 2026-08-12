@@ -1,10 +1,10 @@
 const $ = (s) => document.querySelector(s);
 
 const birdRoster = {
-  "18": { src: "assets/bird-pitcher.webp?v=2", label: "綠色王牌" },
-  "21": { src: "assets/bird-lefty-21.webp", label: "藍色左投" },
-  "36": { src: "assets/bird-sidearm-36.webp", label: "黃綠側投" },
-  "99": { src: "assets/bird-closer-99.webp", label: "橘紅終結者" }
+  "18": { src: "assets/bird-pitcher.webp?v=3", label: "綠色王牌" },
+  "21": { src: "assets/bird-lefty-21.webp?v=3", label: "藍色左投" },
+  "36": { src: "assets/bird-sidearm-36.webp?v=3", label: "黃綠側投" },
+  "99": { src: "assets/bird-closer-99.webp?v=3", label: "珊瑚終結者" }
 };
 let selectedBird = "18";
 
