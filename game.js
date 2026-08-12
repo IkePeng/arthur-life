@@ -123,10 +123,12 @@ function newState() {
 }
 
 function startGame(customState) {
+  if(!customState) selectedBird=randomOrigin();
   state = customState || newState();
   state.position="投手"; state.pitches=state.pitches||["四縫線直球"]; state.bird=birdRoster[state.bird]?state.bird:"18"; state.origin=state.origin||state.bird; state.special=state.special||[];
   $("#startScreen").classList.add("hidden"); $("#endingScreen").classList.add("hidden"); $("#gameScreen").classList.remove("hidden");
-  save(); render(); showEvent();
+  save(); render();
+  if(state.phase==="match") showMatch(true); else if(state.phase==="skills") showSkills(); else showEvent();
 }
 
 function showEvent() {
@@ -161,12 +163,64 @@ function choose(i) {
 
 function nextTurn() {
   state.turn++;
-  if(state.turn>=4) { state.turn=0; state.chapter++; state.timeline.push(chapters[Math.min(state.chapter,4)]?.name||"生涯終章"); state.stats.health=Math.min(99,state.stats.health+5); }
-  if(state.chapter>=5) return endGame();
+  if(state.turn>=4) { state.turn=4; return showMatch(); }
   const readingPosition=window.scrollY;
   render(); showEvent();
   requestAnimationFrame(()=>window.scrollTo({top:readingPosition,behavior:"auto"}));
   beep(390);
+}
+
+const pitchingRoles={"18":"先發投手","21":"先發投手","36":"中繼投手","99":"終結者","55":"先發投手","77":"中繼投手","88":"終結者"};
+const roleInnings={"先發投手":5,"中繼投手":3,"終結者":1};
+function pitchQuality(pitch) {
+  if(/直球|火球/.test(pitch)) return state.stats.power*.36+state.stats.speed*.42+state.stats.contact*.22;
+  return state.stats.fielding*.45+state.stats.contact*.35+state.stats.spirit*.2;
+}
+function showMatch(resume=false) {
+  state.phase="match"; const role=pitchingRoles[state.bird], total=roleInnings[role];
+  if(!resume||!state.match) state.match={role,total,inning:1,runs:0,scoreless:0,team:role==="終結者"?3:role==="中繼投手"?2:0,opp:role==="終結者"?2:role==="中繼投手"?2:0,log:[]};
+  $("#eventCard").classList.add("hidden"); $("#skillCard").classList.add("hidden"); $("#matchCard").classList.remove("hidden");
+  $("#matchRole").textContent=role; $("#matchTitle").textContent=`${chapters[state.chapter].name} · 章末正式比賽`; renderMatch(); save();
+}
+function renderMatch() {
+  const m=state.match; $("#teamRuns").textContent=m.team; $("#oppRuns").textContent=m.opp; $("#inningLabel").textContent=`${m.role} · 第 ${m.inning} / ${m.total} 局`;
+  $("#matchPrompt").textContent=m.inning>m.total?"投球任務完成":"選擇這局的主戰球種";
+  $("#matchStatus").textContent=m.inning>m.total?`你完成 ${m.total} 局投球，失 ${m.runs} 分。`:"每種球路的成功率都受控球、球威、變化球與體力影響。";
+  $("#pitchChoices").innerHTML=m.inning>m.total?"":state.pitches.map(p=>`<button class="pitch-choice" data-pitch="${p}"><b>${p}</b><small>預估壓制 ${Math.round(pitchQuality(p))}</small></button>`).join("");
+  document.querySelectorAll(".pitch-choice").forEach(b=>b.addEventListener("click",()=>pitchInning(b.dataset.pitch)));
+  $("#matchLog").innerHTML=m.log.slice(-5).map(x=>`<p>${x}</p>`).join(""); $("#nextInningBtn").classList.add("hidden");
+}
+function pitchInning(pitch) {
+  const m=state.match, origin=birdRoster[state.origin], fatigue=(m.inning-1)*(m.role==="先發投手"?.035:.02), quality=pitchQuality(pitch);
+  let concede=Math.max(.06,.48-quality/190+fatigue-(origin.luck||0)*.45-(origin.adversity&&m.team<=m.opp?.05:0));
+  const bad=rng()<concede, runs=bad?(rng()<.7?1:rng()<.9?2:3):0; m.runs+=runs; m.opp+=runs; if(!runs)m.scoreless++;
+  m.log.push(`第 ${m.inning} 局｜${pitch}｜${runs?`失 ${runs} 分`:`無失分 ✓`}`); m.inning++;
+  $("#pitchChoices").innerHTML=""; $("#matchLog").innerHTML=m.log.slice(-5).map(x=>`<p>${x}</p>`).join("");
+  $("#matchStatus").textContent=runs?"打者抓到失投，對手攻下分數。":"漂亮壓制！這局沒有讓對手得分。";
+  $("#teamRuns").textContent=m.team; $("#oppRuns").textContent=m.opp;
+  const done=m.inning>m.total; $("#nextInningBtn").textContent=done?"查看比賽結果 →":"下一局 →"; $("#nextInningBtn").classList.remove("hidden"); save(); beep(runs?230:560);
+}
+function continueMatch() { if(state.match.inning>state.match.total) finishMatch(); else renderMatch(); }
+function finishMatch() {
+  const m=state.match; if(m.team===m.opp)m.team+=rng()<.58?1:0; const won=m.team>m.opp;
+  state.skillPoints=Math.max(2,3+m.scoreless+(won?2:0)-Math.min(2,m.runs)); state.skillAllocation={}; state.phase="skills";
+  state.fame+=won?4:1; state.fans+=won?500:120; state.timeline.push(`${chapters[state.chapter].name}：${won?"勝投":"完成登板"}（${m.total}局失${m.runs}分）`);
+  showSkills(); render(); save();
+}
+function showSkills() {
+  $("#eventCard").classList.add("hidden"); $("#matchCard").classList.add("hidden"); $("#skillCard").classList.remove("hidden"); renderSkills();
+}
+function renderSkills() {
+  const used=Object.values(state.skillAllocation||{}).reduce((a,b)=>a+b,0), remaining=state.skillPoints-used; $("#skillPointsValue").textContent=remaining;
+  $("#skillAllocations").innerHTML=Object.keys(state.stats).map(k=>`<div><span>${statLabels[k]} <b>${state.stats[k]} → ${state.stats[k]+(state.skillAllocation[k]||0)}</b></span><button data-k="${k}" data-d="-1" ${!state.skillAllocation[k]?'disabled':''}>−</button><strong>${state.skillAllocation[k]||0}</strong><button data-k="${k}" data-d="1" ${remaining<=0?'disabled':''}>＋</button></div>`).join("");
+  document.querySelectorAll("#skillAllocations button").forEach(b=>b.addEventListener("click",()=>{const k=b.dataset.k,d=+b.dataset.d;state.skillAllocation[k]=Math.max(0,(state.skillAllocation[k]||0)+d);renderSkills();}));
+  $("#confirmSkillsBtn").disabled=remaining!==0;
+}
+function confirmSkills() {
+  const remaining=state.skillPoints-Object.values(state.skillAllocation).reduce((a,b)=>a+b,0); if(remaining)return;
+  const cap=birdRoster[state.origin].cap||99; Object.entries(state.skillAllocation).forEach(([k,v])=>state.stats[k]=Math.min(cap,state.stats[k]+v));
+  state.chapter++; state.turn=0; state.phase="event"; state.match=null; state.stats.health=Math.min(cap,state.stats.health+5);
+  $("#skillCard").classList.add("hidden"); $("#eventCard").classList.remove("hidden"); if(state.chapter>=5)return endGame(); render();showEvent();save();
 }
 
 function overallScore() { const s=state.stats; return Math.round((s.power+s.contact+s.speed+s.fielding+s.spirit+s.health)/6); }
@@ -178,7 +232,7 @@ function render() {
   $("#stats").innerHTML=Object.entries(state.stats).map(([k,v])=>`<div class="stat"><div class="stat-head"><span>${statLabels[k]}</span><b>${v}</b></div><div class="stat-track"><i style="width:${Math.min(100,v)}%"></i></div></div>`).join("");
   $("#pitchList").innerHTML=[...(state.special||[]).map(x=>`<span class="pitch-chip origin-chip">★ ${x}</span>`),...state.pitches.map((p,i)=>`<span class="pitch-chip ${i===state.pitches.length-1&&state.pitches.length>1?'new':''}">${p}</span>`)].join(""); $("#pitchCount").textContent=`${state.pitches.length} / 8`;
   $("#fameValue").textContent=state.fame; $("#moneyValue").textContent=state.money+" 萬"; $("#fansValue").textContent=state.fans>=10000?(state.fans/10000).toFixed(1)+"萬":state.fans;
-  $("#chapterLabel").textContent=`第${['一','二','三','四','五'][state.chapter]}章`; $("#seasonLabel").textContent=ch.name; $("#weekLabel").textContent=`第 ${state.turn+1} / 4 回合`; $("#progressBar").style.width=`${(state.turn+1)/4*100}%`;
+  $("#chapterLabel").textContent=`第${['一','二','三','四','五'][state.chapter]}章`; $("#seasonLabel").textContent=ch.name; $("#weekLabel").textContent=state.turn>=4?"章末比賽":`第 ${state.turn+1} / 4 回合`; $("#progressBar").style.width=`${Math.min(100,(state.turn+1)/5*100)}%`;
   $("#timelineItems").innerHTML=state.timeline.slice(-8).map(x=>`<span class="timeline-item">● ${x}</span>`).join(""); $("#achievementCount").textContent=`${Math.max(0,state.timeline.length-1)} 個里程碑`;
 }
 
@@ -198,19 +252,14 @@ function save() { localStorage.setItem("baseballLifeSave",JSON.stringify(state))
 function resetToStart() { localStorage.removeItem("baseballLifeSave"); state=null; $("#gameScreen").classList.add("hidden"); $("#endingScreen").classList.add("hidden"); $("#startScreen").classList.remove("hidden"); window.scrollTo({top:0,behavior:"smooth"}); }
 
 function randomOrigin() { const ids=Object.keys(birdRoster); return ids[Math.floor(Math.random()*ids.length)]; }
-function revealRandomOrigin() {
-  selectedBird=randomOrigin(); const origin=birdRoster[selectedBird];
-  $("#originName").textContent=origin.label; $("#originBonus").textContent=origin.bonus;
-  $("#randomBirdCard img").src=origin.src; $("#randomBirdCard b").textContent=origin.label;
-  $(".hero-player img").src=birdRoster[selectedBird].src;
-}
 $("#startBtn").addEventListener("click",()=>startGame());
 $("#nextBtn").addEventListener("click",nextTurn);
+$("#nextInningBtn").addEventListener("click",continueMatch);
+$("#confirmSkillsBtn").addEventListener("click",confirmSkills);
 $("#restartBtn").addEventListener("click",()=>{ if(confirm("確定要放棄目前生涯，重新開始嗎？")) resetToStart(); });
 $("#newLifeBtn").addEventListener("click",resetToStart);
 $("#continueBtn").addEventListener("click",()=>{ try{startGame(JSON.parse(localStorage.getItem("baseballLifeSave")));}catch{resetToStart();} });
 $("#soundBtn").addEventListener("click",e=>{soundOn=!soundOn;e.currentTarget.classList.toggle("off",!soundOn);beep();});
 $("#shareBtn").addEventListener("click",async()=>{ const text=`⚾ 逸群的野球｜${state.name}\n${state.position} · ${birdRoster[state.origin].label}\n生涯評價 ${grade(overallScore())}\n名聲 ${state.fame}｜球迷 ${state.fans}`; try{await navigator.clipboard.writeText(text);$("#copyHint").textContent="生涯卡已複製！";}catch{$("#copyHint").textContent=text;} });
 
-revealRandomOrigin();
 if(localStorage.getItem("baseballLifeSave")) $("#continueBtn").classList.remove("hidden");
