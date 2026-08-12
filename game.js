@@ -1,12 +1,12 @@
 const $ = (s) => document.querySelector(s);
 
 const birdRoster = {
-  "18": { src:"assets/bird-pitcher.webp?v=5", label:"資本雄厚", bonus:"資金充裕 · 頂級設備 · 訓練開銷減免", money:1800, stats:{contact:4,health:4}, training:1.12, cost:0.5 },
-  "21": { src:"assets/bird-lefty-21.webp?v=5", label:"一招入魂", bonus:"指定武器接近滿級 · 其他基礎能力較低", stats:{speed:55,power:8,contact:-6,fielding:-5,health:-4}, pitch:"160km 火球", special:"火球入魂" },
-  "36": { src:"assets/bird-sidearm-36.webp?v=5", label:"天賦異稟", bonus:"能力上限提高 · 訓練成長加成 · 覺醒爆發", stats:{power:7,contact:7,speed:7,fielding:7,health:5}, training:1.35, cap:110, special:"天賦覺醒" },
-  "99": { src:"assets/bird-closer-99.webp?v=5", label:"名門之後", bonus:"高人氣與聲望 · 傳奇導師 · 球探青睞", fame:18, fans:3800, stats:{spirit:6,contact:4}, scout:.16, special:"傳奇人脈" },
-  "55": { src:"assets/bird-power-55.webp?v=5", label:"草莽野草", bonus:"逆境爆發 · 體力極佳 · 在地死忠球迷", fans:900, stats:{health:18,spirit:12,power:4}, adversity:1.35, special:"野草韌性" },
-  "77": { src:"assets/bird-calm-77.webp?v=5", label:"強運之子", bonus:"關鍵時刻強化 · 正面偶遇機率提高", stats:{spirit:8}, luck:.14, special:"命運眷顧" },
+  "18": { src:"assets/solid-bird-pitcher.webp?v=2", label:"資本雄厚", bonus:"資金充裕 · 頂級設備 · 訓練開銷減免", money:1800, stats:{contact:4,health:4}, training:1.12, cost:0.5 },
+  "21": { src:"assets/solid-bird-lefty-21.webp?v=2", label:"一招入魂", bonus:"指定武器接近滿級 · 其他基礎能力較低", stats:{speed:55,power:8,contact:-6,fielding:-5,health:-4}, pitch:"160km 火球", special:"火球入魂" },
+  "36": { src:"assets/solid-bird-sidearm-36.webp?v=2", label:"天賦異稟", bonus:"能力上限提高 · 訓練成長加成 · 覺醒爆發", stats:{power:7,contact:7,speed:7,fielding:7,health:5}, training:1.35, cap:110, special:"天賦覺醒" },
+  "99": { src:"assets/solid-bird-closer-99.webp?v=2", label:"名門之後", bonus:"高人氣與聲望 · 傳奇導師 · 球探青睞", fame:18, fans:3800, stats:{spirit:6,contact:4}, scout:.16, special:"傳奇人脈" },
+  "55": { src:"assets/solid-bird-power-55.webp?v=2", label:"草莽野草", bonus:"逆境爆發 · 體力極佳 · 在地死忠球迷", fans:900, stats:{health:18,spirit:12,power:4}, adversity:1.35, special:"野草韌性" },
+  "77": { src:"assets/solid-bird-calm-77.webp?v=2", label:"強運之子", bonus:"關鍵時刻強化 · 正面偶遇機率提高", stats:{spirit:8}, luck:.14, special:"命運眷顧" },
   "88": { src:"assets/solid-bird-heavy-88.webp?v=1", label:"世故玩家", bonus:"合約加成 · 商業贊助 · 公關維持人氣", money:300, fame:7, fans:1200, stats:{contact:5,spirit:5}, business:1.55, special:"談判高手" }
 };
 let selectedBird = null;
@@ -140,6 +140,16 @@ const events = [
   {icon:"🌅",tag:"第八章 · 最後一局",title:"你要如何離開投手丘？",text:"最後一場比賽結束後，球場沒有立刻關燈。你回頭看著走過的每一層級。",choices:[["再投一季，直到沒有人要我",{spirit:8,fame:5,health:-6},"你把每次登板都當成額外獲得的禮物。",.48],["回到故鄉成為投手教練",{fielding:7,fame:7,fans:10000},"你把傷病、失敗與復出的知識交給下一代。"],["在最高舞台正式引退",{fame:10,spirit:7,fans:15000},"掌聲穿過球場，也穿過你漫長的職業人生。"]]}
 ];
 const storyEvents=[...events.slice(0,8),...events.slice(20)];
+function applyStoryConfig(){
+  const cfg=window.STORY_CONFIG||{};
+  Object.entries(cfg.chapterOverrides||{}).forEach(([n,data])=>Object.assign(chapters[+n-1]||{},data));
+  Object.entries(cfg.eventOverrides||{}).forEach(([id,data])=>{
+    const [chapter,turn]=id.split("-").map(Number), target=storyEvents[(chapter-1)*4+turn-1]; if(!target)return;
+    ["tag","title","text"].forEach(k=>{if(data[k]!==undefined)target[k]=data[k];});
+    if(Array.isArray(data.choices))target.choices=data.choices.map(c=>[c.text,c.effects||{},c.result||"你的選擇改變了生涯。",c.chance]);
+  });
+}
+applyStoryConfig();
 const pathNames={mlb:"美國職棒",npb:"日本職棒",cpbl:"中華職棒",return:"職業復出聯盟"};
 function currentLeague(){return pathNames[state.careerPath]||"職業棒球";}
 
@@ -232,7 +242,7 @@ function pitchProfile(pitch) {
   const s=state.stats, fast=/直球|火球/.test(pitch), elite=/160km|火球入魂/.test(pitch), breaker=/曲球|滑球|指叉|SFF|變速|切球/.test(pitch);
   const quality=fast?s.power*.34+s.speed*.42+s.contact*.24:s.fielding*.48+s.contact*.34+s.spirit*.18;
   let hit=.355-quality*.00175, k=.09+quality*.00205, bb=.145-s.contact*.00125;
-  if(elite){hit-=.055;k+=.105;bb+=.035;} else if(/指叉|SFF/.test(pitch)){hit-=.04;k+=.075;bb+=.025;} else if(/滑球|曲球/.test(pitch)){hit-=.025;k+=.055;bb+=.018;} else if(/變速/.test(pitch)){hit-=.035;k+=.04;bb-=.006;} else if(/二縫線|切球/.test(pitch)){hit-=.012;k-=.015;bb-=.018;} else if(fast){hit+=.018;k+=.018;}
+  if(elite){hit-=.035;k+=.105;bb+=.035;} else if(/指叉|SFF/.test(pitch)){hit-=.065;k+=.075;bb+=.075;} else if(/滑球|曲球/.test(pitch)){hit-=.055;k+=.055;bb+=.065;} else if(/變速/.test(pitch)){hit-=.06;k+=.04;bb+=.05;} else if(/伸卡|二縫線|切球/.test(pitch)){hit-=.035;k-=.015;bb+=.025;} else if(/四縫線/.test(pitch)){hit+=.085;k+=.018;bb-=.045;} else if(fast){hit+=.035;k+=.018;}
   return {quality,hit:Math.max(.115,Math.min(.39,hit)),k:Math.max(.08,Math.min(.48,k)),bb:Math.max(.025,Math.min(.20,bb)),breaker};
 }
 function showMatch(resume=false) {
@@ -243,22 +253,24 @@ function showMatch(resume=false) {
 }
 function renderMatch() {
   const m=state.match; $("#teamRuns").textContent=m.team; $("#oppRuns").textContent=m.opp; $("#inningLabel").textContent=`${m.role} · 第 ${m.inning} / ${m.total} 局`;
-  $("#matchPrompt").textContent=m.inning>m.total?"投球任務完成":"選擇這局的主戰球種";
-  $("#matchStatus").textContent=m.inning>m.total?`你完成 ${m.total} 局投球，失 ${m.runs} 分。`:"每種球路的成功率都受控球、球威、變化球與體力影響。";
-  $("#pitchChoices").innerHTML=m.inning>m.total?"":state.pitches.map(p=>{const x=pitchProfile(p);return `<button class="pitch-choice" data-pitch="${p}"><b>${p}</b><small>預估被打擊率 <strong>${x.hit.toFixed(3).replace(/^0/,"")}</strong></small><em>三振 ${Math.round(x.k*100)}% · 保送 ${Math.round(x.bb*100)}%</em></button>`}).join("");
-  document.querySelectorAll(".pitch-choice").forEach(b=>b.addEventListener("click",()=>pitchInning(b.dataset.pitch)));
+  m.batter=m.batter||{balls:0,strikes:0,outs:0,bases:0,runs:0,hits:0,walks:0,ks:0,batters:1};
+  $("#matchPrompt").textContent=m.inning>m.total?"投球任務完成":`第 ${m.batter.batters} 位打者｜${m.batter.balls} 壞 ${m.batter.strikes} 好｜${m.batter.outs} 出局`;
+  $("#matchStatus").textContent=m.inning>m.total?`你完成 ${m.total} 局投球，失 ${m.runs} 分。`:"每次選一顆球：三好球三振、四壞球保送；打者也可能提前擊球。";
+  $("#pitchChoices").innerHTML=m.inning>m.total?"":state.pitches.map(p=>{const x=pitchProfile(p);return `<button class="pitch-choice" data-pitch="${p}"><b>${p}</b><small>被打擊率 <strong>${x.hit.toFixed(3).replace(/^0/,"")}</strong></small><em>進好球帶 ${Math.round((1-x.bb)*100)}% · 揮空 ${Math.round(x.k*100)}%</em></button>`}).join("");
+  document.querySelectorAll(".pitch-choice").forEach(b=>b.addEventListener("click",()=>pitchBall(b.dataset.pitch)));
   $("#matchLog").innerHTML=m.log.slice(-5).map(x=>`<p>${x}</p>`).join(""); $("#nextInningBtn").classList.add("hidden");
 }
-function pitchInning(pitch) {
-  const m=state.match, origin=birdRoster[state.origin], fatigue=(m.inning-1)*(m.role==="先發投手"?.014:.008), profile=pitchProfile(pitch);
-  const hitP=Math.min(.48,profile.hit+fatigue), bbP=Math.min(.24,profile.bb+fatigue*.7), kP=Math.max(.06,profile.k-fatigue*.6); let outs=0,bases=0,runs=0,hits=0,walks=0,ks=0,batters=0;
-  while(outs<3&&batters<12){batters++;const roll=rng();if(roll<bbP){walks++;bases++;if(bases>3){runs++;bases=3;}}else if(roll<bbP+hitP){hits++;const extra=rng()<.18?2:1;runs+=Math.max(0,bases+extra-3);bases=Math.min(3,bases+extra);}else if(roll<bbP+hitP+kP){ks++;outs++;}else{outs++;if(bases>0&&rng()<.22)bases--;}}
-  m.outs+=3;m.hits+=hits;m.walks+=walks;m.strikeouts+=ks;m.batters+=batters;m.runs+=runs;m.opp+=runs;if(!runs)m.scoreless++;
-  m.log.push(`第 ${m.inning} 局｜${pitch}｜${hits}安 ${walks}保送 ${ks}K｜${runs?`失 ${runs} 分`:`無失分 ✓`}`); m.inning++;
-  $("#pitchChoices").innerHTML=""; $("#matchLog").innerHTML=m.log.slice(-5).map(x=>`<p>${x}</p>`).join("");
-  $("#matchStatus").textContent=runs?"打者抓到失投，對手攻下分數。":"漂亮壓制！這局沒有讓對手得分。";
-  $("#teamRuns").textContent=m.team; $("#oppRuns").textContent=m.opp;
-  const done=m.inning>m.total; $("#nextInningBtn").textContent=done?"查看比賽結果 →":"下一局 →"; $("#nextInningBtn").classList.remove("hidden"); save(); beep(runs?230:560);
+function pitchBall(pitch) {
+  const m=state.match,b=m.batter,profile=pitchProfile(pitch),fatigue=(m.inning-1)*(m.role==="先發投手"?.012:.007), fast=/四縫線/.test(pitch), breaking=/曲球|滑球|指叉|SFF|變速|伸卡|切球/.test(pitch);
+  const ballP=Math.min(.42,Math.max(.07,profile.bb+(breaking?.09:fast?-.045:0)+fatigue)), contactP=Math.min(.48,profile.hit+(fast?.075:breaking?-.045:0)+fatigue), swingP=.48+b.strikes*.1-b.balls*.03; let message="";
+  const roll=rng();
+  if(roll<ballP){b.balls++;message=`${pitch} 偏離好球帶｜壞球 ${b.balls}`;if(b.balls>=4){b.walks++;b.bases++;if(b.bases>3){b.runs++;b.bases=3;}message=`四壞保送｜${pitch}`;newBatter();}}
+  else if(rng()<swingP){if(rng()<contactP){if(rng()<.33){b.outs++;message=`${pitch} 被擊成出局球`;newBatter();}else{b.hits++;const extra=rng()<.16?2:1;b.runs+=Math.max(0,b.bases+extra-3);b.bases=Math.min(3,b.bases+extra);message=`${pitch} 被擊出${extra===2?"長打":"安打"}`;newBatter();}}else{b.strikes++;message=`揮棒落空｜好球 ${b.strikes}`;if(b.strikes>=3){b.ks++;b.outs++;message=`三振！決勝球：${pitch}`;newBatter();}}}
+  else{b.strikes++;message=`${pitch} 進入好球帶｜好球 ${b.strikes}`;if(b.strikes>=3){b.ks++;b.outs++;message=`站著三振！決勝球：${pitch}`;newBatter();}}
+  m.log.push(`第 ${m.inning} 局｜${message}`);
+  if(b.outs>=3)finishPlayedInning(); else renderMatch(); save(); beep(/安打|保送|失/.test(message)?230:520);
+  function newBatter(){b.balls=0;b.strikes=0;b.batters++;}
+  function finishPlayedInning(){const runs=b.runs;m.outs+=3;m.hits+=b.hits;m.walks+=b.walks;m.strikeouts+=b.ks;m.batters+=b.batters-1;m.runs+=runs;m.opp+=runs;if(!runs)m.scoreless++;m.log.push(`第 ${m.inning} 局結束｜${b.hits}安 ${b.walks}保送 ${b.ks}K｜${runs?`失 ${runs} 分`:`無失分 ✓`}`);m.inning++;m.batter=null;$("#pitchChoices").innerHTML="";$("#matchLog").innerHTML=m.log.slice(-5).map(x=>`<p>${x}</p>`).join("");$("#matchStatus").textContent=runs?"這局遭到得分。":"漂亮壓制！這局沒有失分。";$("#teamRuns").textContent=m.team;$("#oppRuns").textContent=m.opp;const done=m.inning>m.total;$("#nextInningBtn").textContent=done?"查看比賽結果 →":"下一局 →";$("#nextInningBtn").classList.remove("hidden");}
 }
 function continueMatch() { if(state.match.inning>state.match.total) finishMatch(); else renderMatch(); }
 function finishMatch() {
@@ -278,7 +290,7 @@ function showSkills() {
 function formatIP(outs){return `${Math.floor(outs/3)}.${outs%3}`;}
 function renderSkills() {
   const used=Object.values(state.skillAllocation||{}).reduce((a,b)=>a+b,0), remaining=state.skillPoints-used, pointsEl=$("#skillPointsValue"); if(pointsEl)pointsEl.textContent=remaining;
-  $("#skillAllocations").innerHTML=Object.keys(state.stats).map(k=>`<div><span>${statLabels[k]} <b>${state.stats[k]} → ${state.stats[k]+(state.skillAllocation[k]||0)}</b><small>單點成功率 ${Math.round(skillSuccessRate(k)*100)}%</small></span><button data-k="${k}" data-d="-1" ${state.skillResolved||!state.skillAllocation[k]?'disabled':''}>−</button><strong>${state.skillAllocation[k]||0}</strong><button data-k="${k}" data-d="1" ${state.skillResolved||remaining<=0?'disabled':''}>＋</button></div>`).join("");
+  $("#skillAllocations").innerHTML=["power","contact","speed","fielding"].map(k=>`<div><span>${statLabels[k]} <b>${state.stats[k]} → ${state.stats[k]+(state.skillAllocation[k]||0)}</b><small>單點成功率 ${Math.round(skillSuccessRate(k)*100)}%</small></span><button data-k="${k}" data-d="-1" ${state.skillResolved||!state.skillAllocation[k]?'disabled':''}>−</button><strong>${state.skillAllocation[k]||0}</strong><button data-k="${k}" data-d="1" ${state.skillResolved||remaining<=0?'disabled':''}>＋</button></div>`).join("");
   document.querySelectorAll("#skillAllocations button").forEach(b=>b.addEventListener("click",()=>{const k=b.dataset.k,d=+b.dataset.d;state.skillAllocation[k]=Math.max(0,(state.skillAllocation[k]||0)+d);renderSkills();}));
   $("#confirmSkillsBtn").disabled=!state.skillResolved&&remaining!==0; $("#confirmSkillsBtn").textContent=state.skillResolved?"進入下一章":"確認分配並進行強化";
 }
@@ -308,7 +320,7 @@ function grade(n) { return n>=82?'S':n>=70?'A':n>=57?'B':n>=44?'C':n>=32?'D':'E'
 function render() {
   const ch=chapters[state.chapter], bird=birdRoster[state.bird], careerPlace=state.chapter>=4?`${currentLeague()} · ${ch.place}`:ch.place; $("#displayName").textContent=state.name; $("#playerPosition").textContent=`${state.position} · ${bird.label}`; $("#careerLine").textContent=`${ch.age} 歲 · ${careerPlace} · ${bird.bonus}`; $("#avatar").innerHTML=`<img src="${bird.src}" alt="${bird.label}">`;
   $("#overall").textContent=grade(overallScore());
-  $("#stats").innerHTML=Object.entries(state.stats).map(([k,v])=>`<div class="stat"><div class="stat-head"><span>${statLabels[k]}</span><b>${v}</b></div><div class="stat-track"><i style="width:${Math.min(100,v)}%"></i></div></div>`).join("");
+  $("#stats").innerHTML=Object.entries(state.stats).filter(([k])=>!['spirit','health'].includes(k)).map(([k,v])=>`<div class="stat"><div class="stat-head"><span>${statLabels[k]}</span><b>${v}</b></div><div class="stat-track"><i style="width:${Math.min(100,v)}%"></i></div></div>`).join("");
   $("#pitchList").innerHTML=[...(state.special||[]).map(x=>`<span class="pitch-chip origin-chip">★ ${x}</span>`),...state.pitches.map((p,i)=>`<span class="pitch-chip ${i===state.pitches.length-1&&state.pitches.length>1?'new':''}">${p}</span>`)].join(""); $("#pitchCount").textContent=`${state.pitches.length} / 8`;
   $("#fameValue").textContent=state.fame; $("#moneyValue").textContent=state.money+" 萬"; $("#fansValue").textContent=state.fans>=10000?(state.fans/10000).toFixed(1)+"萬":state.fans;
   $("#chapterLabel").textContent=`第${['一','二','三','四','五','六','七','八'][state.chapter]}章`; $("#seasonLabel").textContent=ch.name; $("#weekLabel").textContent=state.turn>=4?"章末比賽":`第 ${state.turn+1} / 4 回合`; $("#progressBar").style.width=`${Math.min(100,(state.turn+1)/5*100)}%`;
