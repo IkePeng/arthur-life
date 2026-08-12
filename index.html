@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#15291f" />
+  <title>野球日誌 — 棒球人生模擬器</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Zilla+Slab:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+  <main class="shell">
+    <header class="brand">
+      <div class="brand-mark" aria-hidden="true"><span>⚾</span></div>
+      <div>
+        <p class="eyebrow">A BASEBALL STORY</p>
+        <h1>野球日誌</h1>
+      </div>
+      <button id="soundBtn" class="icon-btn" type="button" aria-label="切換音效" title="切換音效">♪</button>
+    </header>
+
+    <section id="startScreen" class="card start-card">
+      <div class="hero-copy">
+        <p class="tag">你的人生，從這一球開始。</p>
+        <h2>從校園菜鳥，到傳奇引退。</h2>
+        <p>每一次選擇都會改變能力、名聲與命運。沒有標準答案，只有屬於你的棒球人生。</p>
+      </div>
+
+      <div class="setup-grid">
+        <label>
+          <span>球員姓名</span>
+          <input id="playerName" maxlength="10" placeholder="無名小將" autocomplete="off" />
+        </label>
+        <label>
+          <span>守備位置</span>
+          <select id="position">
+            <option value="投手">投手</option>
+            <option value="捕手">捕手</option>
+            <option value="內野手" selected>內野手</option>
+            <option value="外野手">外野手</option>
+          </select>
+        </label>
+        <label class="seed-field">
+          <span>命運種子 <small>（同種子＝同事件）</small></span>
+          <div class="input-with-button">
+            <input id="seedInput" maxlength="12" aria-label="命運種子" />
+            <button id="randomSeed" type="button">↻</button>
+          </div>
+        </label>
+      </div>
+
+      <button id="startBtn" class="primary-btn" type="button">踏上球場 <span>→</span></button>
+      <p class="fine-print">遊戲會自動保存在此裝置</p>
+      <button id="continueBtn" class="text-btn hidden" type="button">繼續上次的人生</button>
+    </section>
+
+    <section id="gameScreen" class="game-layout hidden">
+      <aside class="player-panel card">
+        <div class="player-id">
+          <div id="avatar" class="avatar">7</div>
+          <div>
+            <p id="playerPosition" class="eyebrow">內野手</p>
+            <h2 id="displayName">無名小將</h2>
+            <p id="careerLine">15 歲 · 青葉中學</p>
+          </div>
+        </div>
+
+        <div class="overall-row">
+          <span>綜合評價</span>
+          <strong id="overall">C</strong>
+        </div>
+
+        <div id="stats" class="stats"></div>
+
+        <div class="meta-stats">
+          <div><span>名聲</span><b id="fameValue">0</b></div>
+          <div><span>資金</span><b id="moneyValue">0 萬</b></div>
+          <div><span>粉絲</span><b id="fansValue">12</b></div>
+        </div>
+
+        <button id="restartBtn" class="ghost-btn" type="button">重新開始</button>
+      </aside>
+
+      <div class="story-column">
+        <div class="season-bar card">
+          <div>
+            <span id="chapterLabel">第一章</span>
+            <strong id="seasonLabel">菜鳥的夏天</strong>
+          </div>
+          <div class="progress-wrap">
+            <span id="weekLabel">第 1 / 8 回合</span>
+            <div class="progress"><i id="progressBar"></i></div>
+          </div>
+        </div>
+
+        <article id="eventCard" class="event-card card">
+          <div id="eventVisual" class="event-visual" aria-hidden="true">
+            <div class="scoreboard"><span>HOME</span><b>0</b><span>AWAY</span><b>0</b></div>
+            <div id="eventIcon" class="event-icon">⚾</div>
+          </div>
+          <div class="event-content">
+            <p id="eventKicker" class="eyebrow">春季 · 放學後</p>
+            <h2 id="eventTitle">故事即將開始</h2>
+            <p id="eventText">球場的土味、手套的皮革味，和遠方傳來的擊球聲。你握緊了球棒。</p>
+            <div id="resultBox" class="result-box hidden"></div>
+            <div id="choices" class="choices"></div>
+            <button id="nextBtn" class="primary-btn hidden" type="button">繼續 <span>→</span></button>
+          </div>
+        </article>
+
+        <div class="timeline card">
+          <div class="timeline-head">
+            <h3>生涯足跡</h3>
+            <span id="achievementCount">0 個里程碑</span>
+          </div>
+          <div id="timelineItems" class="timeline-items"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="endingScreen" class="card ending-card hidden">
+      <p class="eyebrow">CAREER COMPLETE</p>
+      <div id="endingIcon" class="ending-icon">🏆</div>
+      <h2 id="endingTitle">一代傳奇</h2>
+      <p id="endingText"></p>
+      <div id="finalStats" class="final-stats"></div>
+      <div class="ending-actions">
+        <button id="shareBtn" class="primary-btn" type="button">複製生涯卡</button>
+        <button id="newLifeBtn" class="ghost-btn" type="button">再活一次</button>
+      </div>
+      <p id="copyHint" class="fine-print"></p>
+    </section>
+  </main>
+  <script src="game.js"></script>
+</body>
+</html>
