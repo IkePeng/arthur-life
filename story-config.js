@@ -5,7 +5,9 @@
   effects 可使用：
   power 球威、contact 控球、speed 球速、fielding 變化球、
   spirit 心志（隱藏）、health 健康（隱藏）、luck 運氣（隱藏）、fame 名聲、money 資金、fans 粉絲、
-  pitch 獲得球種、careerPath 職業路線（mlb／npb／cpbl）。
+  pitch 獲得球種、careerPath 職業路線（mlb／npb／cpbl）、
+  endorsement 代言等級（star 一般明星／international 國際品牌）、
+  contractIncentive 合約附加保障（high／travel）；金額都由 economy.config.js 計算。
   chance 是成功率，0.65 代表 65%；不填就是必定成功。
 
   只要把下方範例取消註解或新增事件，就能覆蓋遊戲原本故事。

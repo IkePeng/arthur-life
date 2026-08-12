@@ -33,11 +33,13 @@
     const learning=c.pitchLearning;
     assert(learning&&statIds.has(learning.stat)&&Number.isFinite(learning.firstAt)&&Number.isFinite(learning.every)&&learning.every>0,"pitches.config.js：pitchLearning 設定不完整",errors);
     (learning?.choices||[]).forEach(name=>assert((c.pitches||[]).some(p=>p.name===name),`pitchLearning：未知球種 ${name}`,errors));
+    (c.pitches||[]).forEach(p=>{const profile=p.profile||{};["hitAdjustment","strikeoutAdjustment","ballAdjustment","groundBallAdjustment","homeRunMultiplier"].forEach(k=>assert(Number.isFinite(profile[k]),`pitches.${p.id}.profile：缺少 ${k}`,errors));});
     assert(c.baseballRules?.strikesPerOut===3&&c.baseballRules?.ballsPerWalk===4&&c.baseballRules?.outsPerHalfInning===3,"baseball-rules.config.js：棒球基本規則不完整",errors);
     const controlRate=c.matchBalance?.controlToStrikeRate;assert(controlRate&&Number.isFinite(controlRate.intercept)&&Number.isFinite(controlRate.perPoint),"match-balance.config.js：缺少隱藏控球／好球率公式",errors);if(controlRate){const at20=controlRate.intercept+20*controlRate.perPoint,at80=controlRate.intercept+80*controlRate.perPoint;assert(Math.abs(at20-.30)<.0001&&Math.abs(at80-.90)<.0001,"控球／好球率錨點必須為 20→30%、80→90%",errors);}
     const gradeIds=new Set((c.ratings?.grades||[]).map(x=>x.id));
     assert(gradeIds.has("SS")&&gradeIds.has("S")&&gradeIds.has("A")&&gradeIds.has("B"),"ratings.config.js：評價等級不完整",errors);
     assert((c.scouting?.leagues||[]).every(x=>gradeIds.has(x.minOverallGrade)),"scouting.config.js：邀約綜合評價門檻不完整",errors);
+    ["amateur","cpbl","npb","mlb","return"].forEach(league=>["star","international"].forEach(tier=>{const range=c.economy?.endorsements?.[league]?.[tier];assert(Array.isArray(range)&&range.length===2&&range.every(Number.isFinite)&&range[0]<=range[1],`economy.config.js：${league}.${tier} 代言級距不完整`,errors);}));
     if(errors.length)throw new Error(`v48 設定檔驗證失敗\n${errors.map((x,i)=>`${i+1}. ${x}`).join("\n")}`);
     return true;
   }

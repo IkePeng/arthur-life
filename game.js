@@ -190,6 +190,16 @@ function applyStoryConfig(){
 applyStoryConfig();
 const pathNames={mlb:"美國職棒",npb:"日本職棒",cpbl:"中華職棒",amateur:"獨立／業餘聯盟",return:"職業復出聯盟"};
 function currentLeague(){return pathNames[state.careerPath]||"職業棒球";}
+function endorsementValue(tier="star"){
+  const league=state.careerPath||"amateur",table=v47.economy?.endorsements?.[league]||v47.economy?.endorsements?.amateur||{},range=table[tier]||[30,150];
+  const fame=Math.max(0,Math.min(1,state.fame/100)),audience=Math.max(0,Math.min(1,Math.log10(state.fans+10)/6)),luck=Math.max(0,Math.min(1,state.stats.luck/100));
+  const influence=Math.max(0,Math.min(1,fame*.55+audience*.30+luck*.10+(rng()-.5)*.10)),business=birdRoster[state.origin].business||1;
+  return Math.round(Math.min(range[1],(range[0]+(range[1]-range[0])*influence)*business)/10)*10;
+}
+function contractIncentiveValue(tier="high"){
+  const league=state.careerPath||"amateur",range=v47.economy?.contractIncentives?.[league]||[20,80],ratio=tier==="travel"?.2:.65+Math.max(0,Math.min(.35,state.fame/300));
+  return Math.round((range[0]+(range[1]-range[0])*ratio)/10)*10;
+}
 const legacyLifeEvents=[
   {min:1,title:"球場外的怪博士",text:"夜間練習結束後，一名自稱博士的流浪漢從看台底下鑽出來。他拿著兩瓶冒泡的藥水說：『棒球的極限，不試怎麼知道？』",choices:[["喝下紅色藥水",{mysteryPotion:"red"},"博士盯著你的投球動作，等待藥水發作。"],["喝下藍色藥水",{mysteryPotion:"blue"},"一陣冰冷感從手指一路爬到肩膀。"],["禮貌拒絕並送他一份便當",{spirit:4,luck:3},"博士收下便當，神秘地說：『懂得拒絕未知，也是運動員的才能。』"]]},
   {min:2,requires:"single",title:"球場邊的相遇",text:"一位常在看台替你記錄投球的人，開始出現在訓練結束後。關係讓生活多了一個重心，也可能改變你的身體狀態。",choices:[["認真交往並維持訓練",{relationship:"dating",spirit:6,health:4,luck:3},"穩定的陪伴讓你更有力量。"],["把約會變成戶外體能活動",{relationship:"dating",power:5,health:5,spirit:2},"你變得更強壯，但休息時間也變少。",.72],["暫時專注棒球",{relationship:"single",contact:3,spirit:-3},"你守住訓練節奏，也錯過一段可能的關係。"]]},
@@ -302,6 +312,8 @@ function choose(i) {
     if(k==="pitch") { if(v&&!state.pitches.includes(v)) state.pitches.push(v); if(v) parts.push(`<span class="delta">習得球種：${v}</span>`); continue; }
     if(k==="ability") { if(v&&!state.special.includes(v))state.special.push(v);if(v)parts.push(`<span class="delta">獲得特殊能力：${v}</span>`);continue; }
     if(k==="mysteryPotion") { const potion=drinkMysteryPotion(v);parts.push(`<span class="delta ${potion.change<0?'negative':''}">${potion.text}</span>`);continue; }
+    if(k==="endorsement") { const fee=endorsementValue(v);state.money+=fee;parts.push(`<span class="delta">${v==="international"?"國際品牌":"品牌"}代言費 新台幣 ${fee.toLocaleString()} 萬</span>`);state.timeline.push(`簽下代言合約：新台幣 ${fee.toLocaleString()} 萬元`);continue; }
+    if(k==="contractIncentive") { const fee=contractIncentiveValue(v);state.money+=fee;parts.push(`<span class="delta">合約附加保障 新台幣 ${fee.toLocaleString()} 萬</span>`);continue; }
     if(k==="careerPath") { if(v){state.careerPath=v;parts.push(`<span class="delta">職業道路：${currentLeague()}</span>`);state.timeline.push(`加盟${currentLeague()}`);} continue; }
     if(k==="signingBonus") { state.money+=v;parts.push(`<span class="delta">簽約金 新台幣 ${v.toLocaleString()} 萬</span>`);state.timeline.push(`獲得${currentLeague()}簽約金新台幣 ${v.toLocaleString()} 萬元`);continue; }
     if(k==="relationship") { if(v)state.relationship=v; continue; }
@@ -478,7 +490,27 @@ function pitchBall(pitch) {
   if(onePitchSoul){b.strikes=rules.strikesPerOut;b.ks++;b.outs++;message=`一球入魂！兩好球後的四縫線直球穿過揮棒，打者三振出局`;plateEnded=true;}
   else if(ohtaniFirstPitch){b.strikes++;message=`大谷翔平！面對新打者的第一顆滑球精準進入好球帶｜好球 ${b.strikes}`;}
   else if(roll<ballP){b.balls++;message=`${pitch} 偏外角，打者沒有出棒｜壞球 ${b.balls}`;if(b.balls>=rules.ballsPerWalk){b.walks++;awardWalk();message=`四壞保送｜打者選掉了 ${pitch}`;plateEnded=true;}}
-  else if(rng()<swingP){if(rng()<contactP){const contactRoll=rng();if(wangGroundball){if(b.runners[0]&&b.outs<rules.outsPerHalfInning-1&&rng()<.55){b.outs+=2;b.runners[0]=false;b.inherited[0]=false;message=`王建民！伸卡球被打成游擊滾地球，形成雙殺`; }else{b.outs++;message=`王建民！伸卡球下沉，被打成內野滾地球接殺`;}plateEnded=true;}else if(contactRoll<.16+(b.foul||0)){if(b.strikes<rules.strikesPerOut-1)b.strikes++;message=`${pitch} 被擦成界外球｜好球 ${b.strikes}`;}else if(contactRoll<.22+(b.foul||0)&&rng()<.3){b.errors++;advanceOnError();message=`${pitch} 被擊成滾地球，守備傳球失誤，打者安全上壘`;plateEnded=true;}else if(contactRoll<.42+(b.foul||0)){if(b.runners[0]&&b.outs<rules.outsPerHalfInning-1&&rng()<.34){b.outs+=2;b.runners[0]=false;b.inherited[0]=false;message=`${pitch} 被擊成游擊滾地球，形成雙殺`; }else{b.outs++;message=`${pitch} 被擊成內野滾地球出局`;}plateEnded=true;}else if(contactRoll<.57+(b.foul||0)){const sac=b.runners[2]&&b.outs<rules.outsPerHalfInning-1&&rng()<.42;b.outs++;if(sac){scoreRun(Boolean(b.inherited[2]));b.runners[2]=false;b.inherited[2]=false;message=`${pitch} 被擊成高飛犧牲打，三壘跑者得分`;}else message=`${pitch} 被擊成外野飛球接殺`;plateEnded=true;}else{b.hits++;const hitRoll=rng(),homeRunChance=b.homeRunChance??.1,bases=hitRoll<homeRunChance?4:hitRoll<homeRunChance+.18?2:1;advanceOnHit(bases);message=`${pitch} 被打者擊出${bases===4?"全壘打":bases===2?"二壘安打":"一壘安打"}`;plateEnded=true;}}else{b.strikes++;message=`${pitch} 誘使打者揮空｜好球 ${b.strikes}`;if(b.strikes>=rules.strikesPerOut){b.ks++;b.outs++;message=`三振！打者追打 ${pitch}`;plateEnded=true;}}}
+  else if(rng()<swingP){
+    if(rng()<contactP){
+      if(wangGroundball){
+        if(b.runners[0]&&b.outs<rules.outsPerHalfInning-1&&rng()<.55){b.outs+=2;b.runners[0]=false;b.inherited[0]=false;message=`王建民！伸卡球被打成游擊滾地球，形成雙殺`;}
+        else{b.outs++;message=`王建民！伸卡球下沉，被打成內野滾地球接殺`;}
+        plateEnded=true;
+      }else if(rng()<.16+(b.foul||0)){
+        if(b.strikes<rules.strikesPerOut-1)b.strikes++;message=`${pitch} 被擦成界外球｜好球 ${b.strikes}`;
+      }else if(rng()<.018){
+        b.errors++;advanceOnError();message=`${pitch} 被擊成滾地球，守備傳球失誤，打者安全上壘`;plateEnded=true;
+      }else if(rng()<risk.hitOnContact){
+        b.hits++;const hitRoll=rng(),bases=hitRoll<risk.homeRun?4:hitRoll<risk.homeRun+.18?2:1;advanceOnHit(bases);message=`${pitch} 被打者擊出${bases===4?"全壘打":bases===2?"二壘安打":"一壘安打"}`;plateEnded=true;
+      }else if(rng()<risk.ground){
+        if(b.runners[0]&&b.outs<rules.outsPerHalfInning-1&&rng()<.34){b.outs+=2;b.runners[0]=false;b.inherited[0]=false;message=`${pitch} 被擊成游擊滾地球，形成雙殺`;}
+        else{b.outs++;message=`${pitch} 被擊成內野滾地球出局`;}
+        plateEnded=true;
+      }else{
+        const sac=b.runners[2]&&b.outs<rules.outsPerHalfInning-1&&rng()<.42;b.outs++;if(sac){scoreRun(Boolean(b.inherited[2]));b.runners[2]=false;b.inherited[2]=false;message=`${pitch} 被擊成高飛犧牲打，三壘跑者得分`;}else message=`${pitch} 被擊成外野飛球接殺`;plateEnded=true;
+      }
+    }else{b.strikes++;message=`${pitch} 誘使打者揮空｜好球 ${b.strikes}`;if(b.strikes>=rules.strikesPerOut){b.ks++;b.outs++;message=`三振！打者追打 ${pitch}`;plateEnded=true;}}
+  }
   else{b.strikes++;message=`${pitch} 擦過邊角｜好球 ${b.strikes}`;if(b.strikes>=rules.strikesPerOut){b.ks++;b.outs++;message=`站著三振！${pitch} 鎖住邊角`;plateEnded=true;}}
   const resultType=classifyPitchResult(message),countAfter=`${b.balls} 壞 ${b.strikes} 好`,stateChange=plateEnded?`打席結束｜出局 ${outsBefore} → ${b.outs}｜${baseSituation(b.runners)}${b.runs>runsBefore?`｜本球失 ${b.runs-runsBefore} 分`:""}`:`球數 ${ballsBefore} 壞 ${strikesBefore} 好 → ${countAfter}`;
   m.lastPitchResult={...resultType,message,detail:stateChange};

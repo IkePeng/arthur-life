@@ -1,0 +1,14 @@
+(function(c){
+  c.economy={
+    displayCurrency:"新台幣",
+    unit:"萬元",
+    endorsements:{
+      amateur:{star:[30,150],international:[80,400]},
+      cpbl:{star:[200,1200],international:[800,3000]},
+      npb:{star:[500,4000],international:[2500,12000]},
+      mlb:{star:[1000,12000],international:[6000,320000]},
+      return:{star:[100,600],international:[300,1500]}
+    },
+    contractIncentives:{amateur:[20,80],cpbl:[50,300],npb:[150,1000],mlb:[300,5000],return:[30,150]}
+  };
+})(window.V47_CONFIG);
