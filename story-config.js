@@ -4,7 +4,7 @@
   事件編號格式：章節-回合，例如 "4-1" 是第四章第一個故事。
   effects 可使用：
   power 球威、contact 控球、speed 球速、fielding 變化球、
-  spirit 心志（隱藏）、health 健康（隱藏）、fame 名聲、money 資金、fans 粉絲、
+  spirit 心志（隱藏）、health 健康（隱藏）、luck 運氣（隱藏）、fame 名聲、money 資金、fans 粉絲、
   pitch 獲得球種、careerPath 職業路線（mlb／npb／cpbl）。
   chance 是成功率，0.65 代表 65%；不填就是必定成功。
 
@@ -27,5 +27,13 @@ window.STORY_CONFIG = {
       ]
     }
     */
+  },
+  // 可新增自訂 15% 偶發人生事件；min 2 代表第三章以後才會出現。
+  extraLifeEvents: [
+    // { min:2, title:"自訂偶遇", text:"事件內容", choices:[{text:"選項",effects:{luck:3},result:"結果"}] }
+  ],
+  // 可覆蓋七個背景的專屬機緣，鍵值為球衣號碼 18、21、36、99、55、77、88。
+  originOpportunityOverrides: {
+    // "18": { title:"新的專屬機緣", text:"內容", choices:[{text:"選項",effects:{money:100},result:"結果"}] }
   }
 };

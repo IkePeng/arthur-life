@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Zilla+Slab:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=10" />
+  <link rel="stylesheet" href="styles.css?v=11" />
 </head>
 <body>
   <div class="grain" aria-hidden="true"></div>
@@ -79,7 +79,12 @@
           <div id="pitchList" class="pitch-list"></div>
         </div>
 
-        <div class="meta-stats">
+        <div class="ability-book">
+          <div class="pitch-book-head"><span>特殊能力</span></div>
+          <div id="abilityList" class="ability-list"></div>
+        </div>
+
+        <div class="meta-stats hidden-system-values" aria-hidden="true">
           <div><span>名聲</span><b id="fameValue">0</b></div>
           <div><span>資金</span><b id="moneyValue">0 萬</b></div>
           <div><span>粉絲</span><b id="fansValue">12</b></div>
@@ -135,7 +140,7 @@
           <button id="confirmSkillsBtn" class="primary-btn" type="button">確認分配並進入下一章</button>
         </article>
 
-        <div class="timeline card">
+        <div class="timeline card hidden-system-values" aria-hidden="true">
           <div class="timeline-head">
             <h3>生涯足跡</h3>
             <span id="achievementCount">0 個里程碑</span>
@@ -158,7 +163,7 @@
       <p id="copyHint" class="fine-print"></p>
     </section>
   </main>
-  <script src="story-config.js?v=1"></script>
-  <script src="game.js?v=26"></script>
+  <script src="story-config.js?v=2"></script>
+  <script src="game.js?v=35"></script>
 </body>
 </html>
