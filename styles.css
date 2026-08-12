@@ -387,3 +387,135 @@ label>span{color:#214c80}.start-card>.primary-btn{position:absolute;z-index:6;ri
   .mode-dock span { width: 50px; height: 49px; }
   .story-route div { grid-template-columns: 30px 78px 1fr; }
 }
+
+/* v8 — 原創街頭棒球 Logo 與塗鴉鳥投手 */
+.brand {
+  width: min(520px, calc(100% - 58px));
+  min-height: 112px;
+  margin: 0 0 6px;
+  padding: 9px 28px 17px 13px;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  isolation: isolate;
+  overflow: visible;
+  transform: rotate(-1deg);
+}
+.brand::before {
+  content: "";
+  position: absolute;
+  z-index: -2;
+  inset: 10px 2px 18px 33px;
+  border: 5px solid #fff;
+  border-radius: 55% 46% 53% 45%;
+  background: linear-gradient(135deg, #2bb9f0 0 18%, #0873ce 19% 55%, #063d91 56%);
+  box-shadow: 6px 7px 0 #032d70, 11px 12px 0 rgba(1,24,67,.35);
+  transform: skewX(-10deg) rotate(1deg);
+}
+.brand::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: 72px;
+  right: 15px;
+  bottom: 13px;
+  height: 19px;
+  border: 3px solid #fff3a0;
+  border-radius: 4px 16px 16px 4px;
+  background: linear-gradient(#ff5632, #c7181d);
+  box-shadow: 3px 4px 0 #062b70;
+  transform: skewX(-17deg);
+}
+.brand-mark {
+  flex: 0 0 auto;
+  width: 76px;
+  height: 76px;
+  margin-left: -2px;
+  color: #fff;
+  background: radial-gradient(circle, #fff 0 48%, #ffcf23 49% 56%, #f24f24 57% 72%, #083d8c 73%);
+  border: 4px solid #fff;
+  outline: 4px solid #062c70;
+  box-shadow: 5px 6px 0 rgba(0,29,78,.7);
+  transform: rotate(-10deg);
+}
+.brand-mark span { font-size: 34px; filter: saturate(1.2); }
+.brand-copy { min-width: 0; position: relative; padding: 4px 0 13px; }
+.brand .eyebrow {
+  margin-left: 9px;
+  color: #fff56a;
+  font-size: 11px;
+  letter-spacing: .13em;
+  text-shadow: 2px 2px 0 #073275;
+  transform: skewX(-7deg);
+}
+.brand h1 {
+  margin: -1px 0 0;
+  color: #ff4e27;
+  font-size: clamp(31px, 5vw, 48px);
+  line-height: .96;
+  letter-spacing: -.07em;
+  font-weight: 900;
+  font-style: italic;
+  white-space: nowrap;
+  -webkit-text-stroke: 2px #fff04e;
+  paint-order: stroke fill;
+  text-shadow: 3px 3px 0 #fff, 7px 7px 0 #06377f, 10px 10px 0 rgba(0,22,65,.45);
+  transform: skewX(-8deg);
+}
+.logo-ribbon {
+  position: absolute;
+  z-index: 2;
+  left: 16px;
+  bottom: -7px;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .14em;
+  text-shadow: 1px 1px 0 #7b1114;
+  transform: skewX(-10deg);
+}
+
+.hero-player {
+  right: 1%;
+  top: 58px;
+  width: min(44%, 430px);
+  height: 450px;
+  filter: drop-shadow(0 17px 7px rgba(0,23,61,.45));
+  transform: rotate(2deg);
+}
+.hero-player img { width: 100%; height: 100%; object-fit: contain; }
+.hero-player::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: 15%;
+  right: 2%;
+  bottom: 6%;
+  height: 19%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(255,198,31,.85), rgba(255,89,36,.18) 55%, transparent 72%);
+  filter: blur(5px);
+}
+
+@media (max-width: 600px) {
+  .brand { width: calc(100% - 48px); min-height: 82px; padding: 5px 16px 13px 7px; margin-bottom: 2px; gap: 7px; }
+  .brand::before { inset: 7px 0 13px 23px; border-width: 3px; box-shadow: 4px 5px 0 #032d70; }
+  .brand::after { left: 50px; right: 7px; bottom: 8px; height: 14px; border-width: 2px; }
+  .brand-mark { width: 54px; height: 54px; border-width: 3px; outline-width: 2px; box-shadow: 3px 4px 0 rgba(0,29,78,.7); }
+  .brand-mark span { font-size: 25px; }
+  .brand-copy { padding: 2px 0 10px; }
+  .brand .eyebrow { margin-left: 5px; font-size: 7px; }
+  .brand h1 { font-size: clamp(25px, 8.1vw, 31px); -webkit-text-stroke-width: 1.5px; text-shadow: 2px 2px 0 #fff, 4px 4px 0 #06377f; }
+  .logo-ribbon { left: 8px; bottom: -4px; font-size: 6px; }
+  .hero-player { right: -38px; top: 109px; width: 205px; height: 252px; transform: rotate(3deg); opacity: 1; }
+  .hero-copy h2 { max-width: 235px; font-size: clamp(29px, 8.7vw, 35px); }
+  .hero-copy > p:last-child { max-width: 220px; }
+}
+
+@media (max-width: 360px) {
+  .brand { width: calc(100% - 44px); }
+  .brand h1 { font-size: 25px; }
+  .hero-player { right: -49px; width: 190px; height: 234px; }
+  .hero-copy h2 { max-width: 215px; font-size: 28px; }
+}
