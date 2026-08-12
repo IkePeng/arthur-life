@@ -234,19 +234,34 @@ function finishMatch() {
 }
 function showSkills() {
   $("#eventCard").classList.add("hidden"); $("#matchCard").classList.add("hidden"); $("#skillCard").classList.remove("hidden");
-  const m=state.match,cp=state.careerPitching; $("#skillSummary").innerHTML=`<span class="match-result-title">${m.result}｜${m.team}：${m.opp}</span><span class="pitching-line"><b>${formatIP(m.outs)}</b><small>投球局數</small><b>${m.era.toFixed(2)}</b><small>防禦率</small><b>${m.strikeouts}</b><small>三振</small><b>${m.walks}</b><small>保送</small><b>${m.hits}</b><small>被安打</small></span><span class="career-line">生涯 ${cp.wins}勝 ${cp.losses}敗｜ERA ${(cp.runs*27/Math.max(1,cp.outs)).toFixed(2)}｜${cp.strikeouts}K／${cp.walks}BB</span>本場獲得 <b id="skillPointsValue">${state.skillPoints}</b> 點，分配完成後才能進入下一章。${state.lastMatchSetback?`<span class="setback match-setback"><b>⚠ 賽後負面事件｜${state.lastMatchSetback.title}</b><br>${state.lastMatchSetback.text}</span>`:""}`; renderSkills();
+  state.skillResolved=state.skillResolved||false;
+  const m=state.match,cp=state.careerPitching;
+  $("#skillSummary").innerHTML=state.skillResolved&&state.skillResultHtml?state.skillResultHtml:`<span class="match-result-title">${m.result}｜${m.team}：${m.opp}</span><span class="pitching-line"><b>${formatIP(m.outs)}</b><small>投球局數</small><b>${m.era.toFixed(2)}</b><small>防禦率</small><b>${m.strikeouts}</b><small>三振</small><b>${m.walks}</b><small>保送</small><b>${m.hits}</b><small>被安打</small></span><span class="career-line">生涯 ${cp.wins}勝 ${cp.losses}敗｜ERA ${(cp.runs*27/Math.max(1,cp.outs)).toFixed(2)}｜${cp.strikeouts}K／${cp.walks}BB</span>本場獲得 <b id="skillPointsValue">${state.skillPoints}</b> 點，分配完成後才能進入下一章。${state.lastMatchSetback?`<span class="setback match-setback"><b>⚠ 賽後負面事件｜${state.lastMatchSetback.title}</b><br>${state.lastMatchSetback.text}</span>`:""}`; renderSkills();
 }
 function formatIP(outs){return `${Math.floor(outs/3)}.${outs%3}`;}
 function renderSkills() {
   const used=Object.values(state.skillAllocation||{}).reduce((a,b)=>a+b,0), remaining=state.skillPoints-used; $("#skillPointsValue").textContent=remaining;
-  $("#skillAllocations").innerHTML=Object.keys(state.stats).map(k=>`<div><span>${statLabels[k]} <b>${state.stats[k]} → ${state.stats[k]+(state.skillAllocation[k]||0)}</b></span><button data-k="${k}" data-d="-1" ${!state.skillAllocation[k]?'disabled':''}>−</button><strong>${state.skillAllocation[k]||0}</strong><button data-k="${k}" data-d="1" ${remaining<=0?'disabled':''}>＋</button></div>`).join("");
+  $("#skillAllocations").innerHTML=Object.keys(state.stats).map(k=>`<div><span>${statLabels[k]} <b>${state.stats[k]} → ${state.stats[k]+(state.skillAllocation[k]||0)}</b><small>單點成功率 ${Math.round(skillSuccessRate(k)*100)}%</small></span><button data-k="${k}" data-d="-1" ${state.skillResolved||!state.skillAllocation[k]?'disabled':''}>−</button><strong>${state.skillAllocation[k]||0}</strong><button data-k="${k}" data-d="1" ${state.skillResolved||remaining<=0?'disabled':''}>＋</button></div>`).join("");
   document.querySelectorAll("#skillAllocations button").forEach(b=>b.addEventListener("click",()=>{const k=b.dataset.k,d=+b.dataset.d;state.skillAllocation[k]=Math.max(0,(state.skillAllocation[k]||0)+d);renderSkills();}));
-  $("#confirmSkillsBtn").disabled=remaining!==0;
+  $("#confirmSkillsBtn").disabled=!state.skillResolved&&remaining!==0; $("#confirmSkillsBtn").textContent=state.skillResolved?"進入下一章":"確認分配並進行強化";
+}
+function skillSuccessRate(k) {
+  const origin=birdRoster[state.origin], current=state.stats[k], talent=origin.training?Math.min(.11,(origin.training-1)*.32):0, equipment=origin.cost?.06:0, injury=state.stats.health<55?.1:state.stats.health<70?.04:0;
+  return Math.max(.38,Math.min(.96,.9+talent+equipment-injury-Math.max(0,current-45)*.006));
 }
 function confirmSkills() {
+  if(state.skillResolved) return advanceChapter();
   const remaining=state.skillPoints-Object.values(state.skillAllocation).reduce((a,b)=>a+b,0); if(remaining)return;
-  const cap=birdRoster[state.origin].cap||99; Object.entries(state.skillAllocation).forEach(([k,v])=>state.stats[k]=Math.min(cap,state.stats[k]+v));
-  state.chapter++; state.turn=0; state.phase="event"; state.match=null; state.lastMatchSetback=null; state.stats.health=Math.min(cap,state.stats.health+5);
+  const cap=birdRoster[state.origin].cap||99, results=[]; let totalSuccess=0,totalFail=0;
+  Object.entries(state.skillAllocation).forEach(([k,v])=>{let success=0;for(let i=0;i<v;i++){if(rng()<skillSuccessRate(k)&&state.stats[k]+success<cap)success++;}const fail=v-success;state.stats[k]=Math.min(cap,state.stats[k]+success);totalSuccess+=success;totalFail+=fail;if(v)results.push(`${statLabels[k]}：成功 ${success}／失敗 ${fail}`);});
+  state.skillResolved=true; state.timeline.push(`技能強化：成功 ${totalSuccess} 點、失敗 ${totalFail} 點`);
+  state.skillResultHtml=`<span class="training-result ${totalFail?'has-fail':''}"><b>${totalFail?'強化有成功也有失敗':'強化大成功！'}</b><small>已使用的技能點不論成敗都會消耗</small>${results.join("<br>")}<strong>總計成功 ${totalSuccess} 點｜失敗 ${totalFail} 點</strong></span>`;
+  $("#skillSummary").innerHTML=state.skillResultHtml;
+  renderSkills();render();save();beep(totalFail?360:650);
+}
+function advanceChapter() {
+  const cap=birdRoster[state.origin].cap||99;
+  state.chapter++; state.turn=0; state.phase="event"; state.match=null; state.lastMatchSetback=null; state.skillResolved=false; state.skillResultHtml=null; state.stats.health=Math.min(cap,state.stats.health+5);
   $("#skillCard").classList.add("hidden"); $("#eventCard").classList.remove("hidden"); if(state.chapter>=5)return endGame(); render();showEvent();save();
 }
 
