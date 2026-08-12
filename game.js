@@ -7,7 +7,7 @@ const birdRoster = {
   "99": { src:"assets/bird-closer-99.webp?v=5", label:"名門之後", bonus:"高人氣與聲望 · 傳奇導師 · 球探青睞", fame:18, fans:3800, stats:{spirit:6,contact:4}, scout:.16, special:"傳奇人脈" },
   "55": { src:"assets/bird-power-55.webp?v=5", label:"草莽野草", bonus:"逆境爆發 · 體力極佳 · 在地死忠球迷", fans:900, stats:{health:18,spirit:12,power:4}, adversity:1.35, special:"野草韌性" },
   "77": { src:"assets/bird-calm-77.webp?v=5", label:"強運之子", bonus:"關鍵時刻強化 · 正面偶遇機率提高", stats:{spirit:8}, luck:.14, special:"命運眷顧" },
-  "88": { src:"assets/bird-heavy-88.webp?v=5", label:"世故玩家", bonus:"合約加成 · 商業贊助 · 公關維持人氣", money:300, fame:7, fans:1200, stats:{contact:5,spirit:5}, business:1.55, special:"談判高手" }
+  "88": { src:"assets/solid-bird-heavy-88.webp?v=1", label:"世故玩家", bonus:"合約加成 · 商業贊助 · 公關維持人氣", money:300, fame:7, fans:1200, stats:{contact:5,spirit:5}, business:1.55, special:"談判高手" }
 };
 let selectedBird = null;
 
