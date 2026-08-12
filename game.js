@@ -162,7 +162,7 @@ $("#restartBtn").addEventListener("click",()=>{ if(confirm("確定要放棄目�
 $("#newLifeBtn").addEventListener("click",resetToStart);
 $("#continueBtn").addEventListener("click",()=>{ try{startGame(JSON.parse(localStorage.getItem("baseballLifeSave")));}catch{resetToStart();} });
 $("#soundBtn").addEventListener("click",e=>{soundOn=!soundOn;e.currentTarget.classList.toggle("off",!soundOn);beep();});
-$("#shareBtn").addEventListener("click",async()=>{ const text=`⚾ 野球日誌｜${state.name}\n${state.position} · 生涯評價 ${grade(overallScore())}\n名聲 ${state.fame}｜球迷 ${state.fans}\n命運種子：${state.seed}`; try{await navigator.clipboard.writeText(text);$("#copyHint").textContent="生涯卡已複製！";}catch{$("#copyHint").textContent=text;} });
+$("#shareBtn").addEventListener("click",async()=>{ const text=`⚾ 逸群的野球｜${state.name}\n${state.position} · 生涯評價 ${grade(overallScore())}\n名聲 ${state.fame}｜球迷 ${state.fans}\n命運種子：${state.seed}`; try{await navigator.clipboard.writeText(text);$("#copyHint").textContent="生涯卡已複製！";}catch{$("#copyHint").textContent=text;} });
 
 const params=new URLSearchParams(location.search); $("#seedInput").value=params.get("seed")||randomSeed();
 if(localStorage.getItem("baseballLifeSave")) $("#continueBtn").classList.remove("hidden");

@@ -142,3 +142,99 @@ input:focus, select:focus { border-color: var(--green-2); box-shadow: 0 0 0 3px 
 }
 
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+/* 逸群的野球：高彩度掌機棒球育成風格 */
+:root {
+  --ink: #10264d;
+  --muted: #526b91;
+  --cream: #e8f7ff;
+  --paper: #ffffff;
+  --green: #0759bd;
+  --green-2: #1689e9;
+  --lime: #ffdc37;
+  --orange: #ff6a23;
+  --line: #8ac7f2;
+  --shadow: 0 9px 0 rgba(6, 56, 132, .28), 0 18px 36px rgba(0, 58, 138, .2);
+}
+
+body {
+  background:
+    radial-gradient(circle at 18% 10%, rgba(255,255,255,.95) 0 2px, transparent 3px),
+    radial-gradient(circle at 80% 22%, rgba(255,255,255,.6) 0 3px, transparent 4px),
+    linear-gradient(155deg, #71d7ff 0%, #2a8fe9 47%, #0755b8 100%);
+  background-size: 70px 70px, 110px 110px, auto;
+}
+
+.grain { opacity: .1; }
+.brand { color: #fff; text-shadow: 0 3px 0 #074387, 0 5px 10px rgba(0,0,0,.25); }
+.brand h1 { font-weight: 900; font-style: italic; letter-spacing: .04em; }
+.brand .eyebrow { color: #fff7a1; }
+.brand-mark {
+  color: #fff;
+  background: linear-gradient(145deg, #ff8b36, #eb3d17);
+  border: 3px solid #fff;
+  box-shadow: 0 4px 0 #942815, 0 7px 14px rgba(0,0,0,.22);
+}
+.icon-btn { color: #0759bd; background: linear-gradient(#fff, #d9f1ff); border: 3px solid #fff; box-shadow: 0 4px 0 #07529b; }
+
+.card {
+  background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(228,247,255,.98));
+  border: 4px solid #fff;
+  outline: 3px solid #0759bd;
+  box-shadow: var(--shadow);
+  border-radius: 25px;
+}
+
+.start-card { background: linear-gradient(180deg, rgba(255,255,255,.96), rgba(211,243,255,.96)); }
+.start-card::before { border-color: rgba(5,89,189,.2); box-shadow: 0 0 0 35px rgba(14,124,220,.06), 0 0 0 75px rgba(14,124,220,.05); }
+.start-card::after { border-color: rgba(255,106,35,.2); }
+.tag { background: linear-gradient(#fff170, #ffc51c); border: 2px solid #f08a00; box-shadow: 0 3px 0 #c36b00; color: #7a3700; }
+.hero-copy h2 { color: #074eaa; text-shadow: 0 3px 0 #b9e8ff; }
+.hero-copy > p:last-child { color: #365a82; font-weight: 500; }
+
+input, select { border: 3px solid #79bde9; color: #10264d; background: linear-gradient(#fff, #eefaff); box-shadow: inset 0 2px 4px rgba(5,89,189,.08); }
+input:focus, select:focus { border-color: #ff9d21; box-shadow: 0 0 0 4px rgba(255,184,40,.22); }
+.input-with-button button { border: 3px solid #79bde9; border-left: 0; color: #0759bd; background: linear-gradient(#eefaff, #cbeaff); }
+
+.primary-btn {
+  background: linear-gradient(180deg, #ffb52b 0%, #ff7b22 55%, #ed4b17 100%);
+  border: 3px solid #fff;
+  outline: 2px solid #b93814;
+  box-shadow: 0 6px 0 #a92c12, 0 10px 19px rgba(140,43,12,.28);
+  text-shadow: 0 2px 0 rgba(121,34,7,.35);
+  border-radius: 18px;
+}
+.primary-btn:hover { background: linear-gradient(180deg, #ffd65a, #ff8a28 58%, #ed4b17); transform: translateY(-2px); }
+
+.player-panel { background: linear-gradient(180deg, #fafdff, #d8efff); }
+.avatar { color: #fff143; background: linear-gradient(160deg, #1689e9, #064aa5); border: 3px solid #fff; outline: 2px solid #06428b; box-shadow: 0 4px 0 #063b7d; }
+.avatar::after { background: #0654b5; border: 2px solid white; border-left: 0; }
+.overall-row strong { color: #9e300d; background: linear-gradient(#fff36d, #ffbd1c); border: 2px solid #ef8515; box-shadow: 0 3px 0 #c4640c; }
+.stat-track { height: 10px; border: 2px solid #75a9d1; background: #c9dfef; }
+.stat-track i { background: linear-gradient(90deg, #ffd729, #ff7b22); }
+.meta-stats div { padding: 8px 3px; background: #fff; border: 2px solid #9dcff0; border-radius: 12px; }
+.ghost-btn { color: #0759bd; background: linear-gradient(#fff, #d9f1ff); border: 2px solid #72b2e3; box-shadow: 0 3px 0 #4c8dbe; }
+
+.season-bar { color: #fff; background: linear-gradient(180deg, #147ede, #0649a1); border-color: #78c8ff; outline-color: #023574; }
+.season-bar > div:first-child span { color: #ffe153; }
+.progress { height: 8px; border: 2px solid #fff; background: #123e7e; }
+.progress i { background: linear-gradient(90deg, #fff052, #ff7425); }
+.progress-wrap > span { color: #d9f3ff; }
+
+.event-visual { background: linear-gradient(180deg, #62d6ff 0%, #198ae1 45%, #0753aa 100%); }
+.event-visual::before { border-color: rgba(255,255,255,.72); background: repeating-linear-gradient(0deg, rgba(255,255,255,.06) 0 12px, transparent 12px 24px); }
+.scoreboard { background: linear-gradient(#123875, #061f4c); border: 2px solid #fff; outline: 2px solid #082b64; box-shadow: 0 3px 0 rgba(0,0,0,.35); }
+.scoreboard b { color: #ffe243; }
+.event-content h2 { color: #0759bd; text-shadow: 0 2px 0 #c3eaff; }
+.event-content .eyebrow { color: #ed541d; }
+.choice { border: 3px solid #7dbcea; background: linear-gradient(180deg, #fff, #e2f5ff); box-shadow: 0 4px 0 #4c91c9; border-radius: 18px; }
+.choice:hover { border-color: #ff9d21; box-shadow: 0 5px 0 #cf6817, 0 9px 18px rgba(6,75,151,.15); }
+.choice-letter { color: #fff; background: linear-gradient(#2d9bf0, #0759bd); border: 2px solid #fff; outline: 1px solid #0759bd; }
+.result-box { border-left: 7px solid #ff6a23; background: linear-gradient(135deg, #fffbe7, #fff1c4); color: #6a3a13; }
+.delta { color: #0759bd; background: #d9efff; border: 1px solid #75b9e8; }
+.delta.negative { color: #a22b1a; background: #ffe0d4; border-color: #f29b7b; }
+.timeline-item { color: #0759bd; background: linear-gradient(#fff, #d9efff); border: 2px solid #95c9ed; }
+.ending-card { background: linear-gradient(180deg, #fff, #d7f1ff); }
+.ending-card h2 { color: #0759bd; text-shadow: 0 3px 0 #a9dcfa; }
+.final-stats div { background: linear-gradient(#fff, #dcefff); border: 2px solid #85bee7; box-shadow: 0 3px 0 #5392c1; }
+.final-stats b { color: #f0581d; }
