@@ -274,7 +274,7 @@ function selectCurrentEvent(){
 
 function careerOfferEvent(){
   const year=(state.stageYear||0)+1;if(state.careerAssessment?.age===state.age)return state.careerAssessment.event;
-  const assessment=window.V47ScoutingEngine.evaluate(v47,state,year),offers=assessment.offers.map(league=>[league.offerText,{...league.effects},league.result]);
+  const assessment=window.V47ScoutingEngine.evaluate(v47,state,year),offers=assessment.offers.map(league=>[`${league.offerText}｜簽約金新台幣 ${league.signingBonusTwd.toLocaleString()} 萬`,{...league.effects},`${league.result} 球團提出新台幣 ${league.signingBonusTwd.toLocaleString()} 萬元簽約金。`]);
   const continueChoices=[
     ["留在大學再磨練一年",{contact:5,fielding:4,spirit:3,health:-2},"你暫緩進入職業，下一年將帶著更完整的投球內容重新接受評估。"],
     ["加入國家培訓隊增加曝光",{fame:5,fans:1200,power:3,health:-4},"更多球探看見你，但密集賽程也增加身體負擔。",.64],
@@ -303,6 +303,7 @@ function choose(i) {
     if(k==="ability") { if(v&&!state.special.includes(v))state.special.push(v);if(v)parts.push(`<span class="delta">獲得特殊能力：${v}</span>`);continue; }
     if(k==="mysteryPotion") { const potion=drinkMysteryPotion(v);parts.push(`<span class="delta ${potion.change<0?'negative':''}">${potion.text}</span>`);continue; }
     if(k==="careerPath") { if(v){state.careerPath=v;parts.push(`<span class="delta">職業道路：${currentLeague()}</span>`);state.timeline.push(`加盟${currentLeague()}`);} continue; }
+    if(k==="signingBonus") { state.money+=v;parts.push(`<span class="delta">簽約金 新台幣 ${v.toLocaleString()} 萬</span>`);state.timeline.push(`獲得${currentLeague()}簽約金新台幣 ${v.toLocaleString()} 萬元`);continue; }
     if(k==="relationship") { if(v)state.relationship=v; continue; }
     if(k in state.stats) state.stats[k]=Math.max(0,Math.min(origin.cap||99,state.stats[k]+v)); else state[k]=Math.max(0,(state[k]||0)+v);
     if(!['spirit','health','luck'].includes(k))parts.push(`<span class="delta ${v<0?'negative':''}">${statLabels[k]||({fame:'名聲',money:'資金',fans:'粉絲'}[k])} ${v>0?'+':''}${v}</span>`);
