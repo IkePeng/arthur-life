@@ -352,20 +352,45 @@ function pitchProfile(pitch) {
 }
 function showMatch(resume=false) {
   state.phase="match";
-  if(!resume||!state.match){const assignment=assignPitchingRole(),role=assignment.role,total=assignment.total,entry=`第 ${assignment.startInning} 局上、第 ${assignment.entryBatter} 棒，${assignment.entryOuts} 出局、${baseSituation(assignment.runners)}`;state.match={role,total,startInning:assignment.startInning,inning:1,runs:0,earnedRuns:0,scoreless:0,team:role==="終結者"?3:role==="中繼投手"?2:0,opp:role==="終結者"?2:role==="中繼投手"?2:0,outs:0,hits:0,walks:0,strikeouts:0,batters:0,entryInheritedRunners:assignment.runners.filter(Boolean).length,inningStartOuts:assignment.entryOuts,batter:newBatterState({outs:assignment.entryOuts,runners:assignment.runners,batters:assignment.entryBatter-1,inherited:assignment.runners}),log:[`賽前任務｜${entry}時接替登板，擔任${role}，預定投 ${total} 局。`]};}
+  if(!resume||!state.match){const assignment=assignPitchingRole(),role=assignment.role,total=assignment.total,entry=`第 ${assignment.startInning} 局上、第 ${assignment.entryBatter} 棒，${assignment.entryOuts} 出局、${baseSituation(assignment.runners)}`;state.match={role,total,startInning:assignment.startInning,inning:1,runs:0,earnedRuns:0,scoreless:0,team:role==="終結者"?3:role==="中繼投手"?2:0,opp:role==="終結者"?2:role==="中繼投手"?2:0,outs:0,hits:0,errors:0,walks:0,strikeouts:0,batters:0,entryInheritedRunners:assignment.runners.filter(Boolean).length,inningStartOuts:assignment.entryOuts,batter:newBatterState({outs:assignment.entryOuts,runners:assignment.runners,batters:assignment.entryBatter-1,inherited:assignment.runners}),log:[`賽前任務｜${entry}時接替登板，擔任${role}，預定投 ${total} 局。`]};}
+  ensureLineScore(state.match);
   const {role,total}=state.match;
   $("#eventCard").classList.add("hidden"); $("#skillCard").classList.add("hidden"); $("#matchCard").classList.remove("hidden");
   $("#matchRole").textContent=role; $("#matchTitle").textContent=`${chapters[state.chapter].name} · 章末正式比賽`; renderMatch(); save();
 }
+function renderScoreBug(m,gameInning){
+  const b=m.betweenInnings?null:m.batter,runners=b?.runners||[false,false,false];
+  $("#teamRuns").textContent=m.team;$("#oppRuns").textContent=m.opp;$("#scoreInning").textContent=m.inning>m.total?"終了":`${gameInning} ▲`;
+  document.querySelectorAll("[data-ball]").forEach(el=>el.classList.toggle("on",!!b&&+el.dataset.ball<=b.balls));
+  document.querySelectorAll("[data-strike]").forEach(el=>el.classList.toggle("on",!!b&&+el.dataset.strike<=b.strikes));
+  document.querySelectorAll("[data-out]").forEach(el=>el.classList.toggle("on",!!b&&+el.dataset.out<=b.outs));
+  document.querySelectorAll("[data-base]").forEach(el=>el.classList.toggle("occupied",!!runners[+el.dataset.base-1]));
+  $("#baseDiamond").setAttribute("aria-label",baseSituation(runners));
+}
+function ensureLineScore(m){
+  if(m.lineScore)return m.lineScore;
+  const completed=Math.max(0,(m.startInning||1)-1),team=Array(9).fill(null),opp=Array(9).fill(null);
+  for(let i=0;i<completed;i++){team[i]=0;opp[i]=0;}
+  distribute(m.team,team,completed);distribute(Math.max(0,m.opp-(m.runs||0)),opp,completed);
+  m.lineScore={team,opp,teamHits:m.team?m.team+2+Math.floor(rng()*3):0,oppHits:m.opp?m.opp+2+Math.floor(rng()*3):0,teamErrors:0,oppErrors:0};
+  return m.lineScore;
+  function distribute(total,row,innings){for(let n=0;n<total&&innings>0;n++)row[Math.floor(rng()*innings)]++;}
+}
+function renderLineScore(m,finishedInning){
+  const line=ensureLineScore(m),head=[1,2,3,4,5,6,7,8,9].map(n=>`<th>${n}</th>`).join(""),cells=row=>row.map(v=>`<td>${v===null?"":v}</td>`).join("");
+  $("#lineScoreTitle").textContent=`第 ${finishedInning} 局結束`;$("#lineScoreTable").innerHTML=`<thead><tr><th>隊伍</th>${head}<th>R</th><th>H</th><th>E</th></tr></thead><tbody><tr><th><span class="line-team away">客</span></th>${cells(line.opp)}<td class="total">${m.opp}</td><td class="total">${line.oppHits+(m.hits||0)}</td><td class="total">${line.oppErrors}</td></tr><tr><th><span class="line-team home">逸</span></th>${cells(line.team)}<td class="total">${m.team}</td><td class="total">${line.teamHits}</td><td class="total">${line.teamErrors+(m.errors||0)}</td></tr></tbody>`;
+}
 function renderMatch() {
-  const m=state.match,gameInning=(m.startInning||1)+m.inning-1; $("#teamRuns").textContent=m.team; $("#oppRuns").textContent=m.opp;
+  const m=state.match,gameInning=(m.startInning||1)+m.inning-1;renderScoreBug(m,gameInning);
   if(m.betweenInnings){
     const s=m.lastInningSummary;$("#inningLabel").textContent=`${m.role} · 第 ${s.gameInning} 局上結束`;
     $("#matchPrompt").textContent=`第 ${s.gameInning} 局上結束｜${s.hits} 安打｜${s.walks} 保送｜${s.strikeouts} K｜${s.runs?`失 ${s.runs} 分`:`無失分`}`;
     $("#matchStatus").textContent=s.pulled?"教練接過球，你回到休息區等待比賽結果。":s.runs?`這局失 ${s.runs} 分，其中 ${s.earned} 分是自責分。`:"這一局守住了，準備下一個投球任務。";
+    renderLineScore(m,s.gameInning);$("#lineScoreWrap").classList.remove("hidden");
     const last=m.lastPitchResult;$("#pitchResult").className=`pitch-result ${last?last.tone:"hidden"}`;$("#pitchResult").innerHTML=last?`<span>${last.icon}</span><div><b>${last.label}</b><strong>${last.message}</strong><small>${last.detail}</small></div>`:"";
     $("#pitchChoices").innerHTML="";$("#matchLog").innerHTML=m.log.slice(-5).map(x=>`<p>${x.replace(/\n/g,"<br>")}</p>`).join("");$("#nextInningBtn").textContent=m.inning>m.total?"查看比賽結果 →":"下一局 →";$("#nextInningBtn").classList.remove("hidden");return;
   }
+  $("#lineScoreWrap").classList.add("hidden");
   $("#inningLabel").textContent=`${m.role} · 第 ${gameInning} 局上 · 任務 ${m.inning} / ${m.total} 局`;
   if(!m.batter){m.inningStartOuts=0;m.batter=newBatterState({batters:(m.nextBatter||1)-1});}
   $("#matchPrompt").textContent=m.inning>m.total?"投球任務完成":`第 ${gameInning} 局上｜第 ${lineupSpot(m.batter.batters)} 棒｜${m.batter.outs} 出局｜${m.batter.balls} 壞 ${m.batter.strikes} 好｜${baseSituation(m.batter.runners)}`;
@@ -440,11 +465,11 @@ function pitchBall(pitch) {
   function advanceOnError(){if(b.runners[2])scoreRun(Boolean(b.inherited[2]),false);b.runners=[true,b.runners[0],b.runners[1]];b.inherited=[false,b.inherited[0],b.inherited[1]];}
   function awardWalk(){if(b.runners[0]&&b.runners[1]&&b.runners[2])scoreRun(Boolean(b.inherited[2]));b.runners[2]=b.runners[2]||(b.runners[1]&&b.runners[0]);b.inherited[2]=b.inherited[2]||(b.inherited[1]&&b.inherited[0]);b.runners[1]=b.runners[1]||b.runners[0];b.inherited[1]=b.inherited[1]||b.inherited[0];b.runners[0]=true;b.inherited[0]=false;}
   function advanceOnHit(bases){if(bases===4){for(let i=0;i<3;i++)if(b.runners[i])scoreRun(Boolean(b.inherited[i]));scoreRun(false);b.runners=[false,false,false];b.inherited=[false,false,false];return;}const next=[false,false,false],nextInherited=[false,false,false];for(let i=2;i>=0;i--){if(!b.runners[i])continue;const destination=i+bases+(rng()<.28?1:0);if(destination>=3)scoreRun(Boolean(b.inherited[i]));else{next[destination]=true;nextInherited[destination]=Boolean(b.inherited[i]);}}next[bases-1]=true;nextInherited[bases-1]=false;b.runners=next;b.inherited=nextInherited;}
-  function finishPlayedInning(pulled=false){const runs=b.runs,earned=b.earnedRuns,recordedOuts=Math.max(0,b.outs-(m.inningStartOuts||0));m.outs+=recordedOuts;m.hits+=b.hits;m.walks+=b.walks;m.strikeouts+=b.ks;m.batters+=b.batters;m.runs+=runs;m.earnedRuns+=earned;m.opp+=runs;if(!runs&&!pulled)m.scoreless++;m.log.push(`${pulled?"提前退場":`第 ${gameInning} 局上結束`}｜投手取得 ${recordedOuts} 出局｜${b.hits}安 ${b.walks}保送 ${b.ks}K｜${runs?`失 ${runs} 分（${earned} 自責）`:`無失分 ✓`}`);m.nextBatter=lineupSpot(b.batters+1);m.lastInningSummary={gameInning,hits:b.hits,walks:b.walks,strikeouts:b.ks,runs,earned,pulled};m.inning=pulled?m.total+1:m.inning+1;m.batter=null;m.inningStartOuts=0;m.betweenInnings=true;if(m.lastPitchResult)m.lastPitchResult.detail=`第三個出局｜第 ${gameInning} 局上結束｜${b.hits} 安打、${b.walks} 保送、${b.ks} K｜${runs?`失 ${runs} 分`:`無失分`}`;renderMatch();}
+  function finishPlayedInning(pulled=false){const runs=b.runs,earned=b.earnedRuns,recordedOuts=Math.max(0,b.outs-(m.inningStartOuts||0)),line=ensureLineScore(m),cell=Math.max(0,Math.min(8,gameInning-1));m.outs+=recordedOuts;m.hits+=b.hits;m.errors=(m.errors||0)+(b.errors||0);m.walks+=b.walks;m.strikeouts+=b.ks;m.batters+=b.batters;m.runs+=runs;m.earnedRuns+=earned;m.opp+=runs;line.opp[cell]=(line.opp[cell]||0)+runs;if(line.team[cell]===null)line.team[cell]=0;if(!pulled&&!(gameInning>=9&&m.team>m.opp)){const attack=rng(),support=attack<.08?2:attack<.34?1:0;line.team[cell]+=support;m.team+=support;line.teamHits+=support?support+Math.floor(rng()*2):Math.floor(rng()*2);}if(!runs&&!pulled)m.scoreless++;m.log.push(`${pulled?"提前退場":`第 ${gameInning} 局上結束`}｜投手取得 ${recordedOuts} 出局｜${b.hits}安 ${b.walks}保送 ${b.ks}K｜${runs?`失 ${runs} 分（${earned} 自責）`:`無失分 ✓`}`);m.nextBatter=lineupSpot(b.batters+1);m.lastInningSummary={gameInning,hits:b.hits,walks:b.walks,strikeouts:b.ks,runs,earned,pulled};m.inning=pulled?m.total+1:m.inning+1;m.batter=null;m.inningStartOuts=0;m.betweenInnings=true;if(m.lastPitchResult)m.lastPitchResult.detail=`第三個出局｜第 ${gameInning} 局上結束｜${b.hits} 安打、${b.walks} 保送、${b.ks} K｜${runs?`失 ${runs} 分`:`無失分`}`;renderMatch();}
 }
 function continueMatch() { window.V47FlowController.assert(state.phase,"CONTINUE_MATCH");state.match.betweenInnings=false;if(state.match.inning>state.match.total) finishMatch(); else renderMatch(); }
 function finishMatch() {
-  const m=state.match; if(m.team===m.opp){if(rng()<.58)m.team++;else m.opp++;} const won=m.team>m.opp;
+  const m=state.match,line=ensureLineScore(m),lastCell=Math.max(0,Math.min(8,(m.startInning||1)+Math.max(0,m.inning-2)-1)); if(m.team===m.opp){if(rng()<.58){m.team++;line.team[lastCell]=(line.team[lastCell]||0)+1;line.teamHits++;}else{m.opp++;line.opp[lastCell]=(line.opp[lastCell]||0)+1;line.oppHits++;}} const won=m.team>m.opp;
   m.era=m.outs?m.earnedRuns*27/m.outs:(m.earnedRuns?Infinity:0);m.result=won?"勝利":"敗戰";m.comment=matchEvaluation(m);
   state.careerPitching=state.careerPitching||{outs:0,runs:0,earnedRuns:0,hits:0,walks:0,strikeouts:0,wins:0,losses:0};const cp=state.careerPitching;cp.outs+=m.outs;cp.runs+=m.runs;cp.earnedRuns=(cp.earnedRuns||0)+m.earnedRuns;cp.hits+=m.hits;cp.walks+=m.walks;cp.strikeouts+=m.strikeouts;won?cp.wins++:cp.losses++;
   state.seasonPitching=state.seasonPitching||{outs:0,runs:0,earnedRuns:0,hits:0,walks:0,strikeouts:0,wins:0,losses:0};const sp=state.seasonPitching;sp.outs+=m.outs;sp.runs+=m.runs;sp.earnedRuns+=m.earnedRuns;sp.hits+=m.hits;sp.walks+=m.walks;sp.strikeouts+=m.strikeouts;won?sp.wins++:sp.losses++;

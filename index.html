@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Zilla+Slab:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=13" />
+  <link rel="stylesheet" href="styles.css?v=14" />
 </head>
 <body>
   <div class="grain" aria-hidden="true"></div>
@@ -122,12 +122,34 @@
         <article id="matchCard" class="match-card card hidden">
           <div class="match-head">
             <div><span id="matchRole">先發投手</span><h2 id="matchTitle">章末正式比賽</h2></div>
-            <div class="match-score"><span>我方 <b id="teamRuns">0</b></span><span>對手 <b id="oppRuns">0</b></span></div>
+            <div class="score-bug" aria-label="比賽比分與壘包狀況">
+              <div class="score-teams">
+                <div><span class="team-mark away">客</span><b id="oppRuns">0</b></div>
+                <div><span class="team-mark home">逸</span><b id="teamRuns">0</b></div>
+              </div>
+              <div id="scoreInning" class="score-inning">1 ▲</div>
+              <div class="score-situation">
+                <div class="bso" aria-label="好壞球與出局數">
+                  <div><b>B</b><i data-ball="1"></i><i data-ball="2"></i><i data-ball="3"></i></div>
+                  <div><b>S</b><i data-strike="1"></i><i data-strike="2"></i></div>
+                  <div><b>O</b><i data-out="1"></i><i data-out="2"></i></div>
+                </div>
+                <div id="baseDiamond" class="base-diamond" aria-label="壘上無人">
+                  <i class="base second" data-base="2"></i>
+                  <i class="base third" data-base="3"></i>
+                  <i class="base first" data-base="1"></i>
+                </div>
+              </div>
+            </div>
           </div>
           <div class="match-body">
             <p id="inningLabel" class="eyebrow">第 1 局</p>
             <h3 id="matchPrompt">選擇這局的主戰球種</h3>
             <p id="matchStatus">球場燈光亮起，你走上投手丘。</p>
+            <div id="lineScoreWrap" class="line-score-wrap hidden" aria-live="polite">
+              <div class="line-score-title"><b id="lineScoreTitle">第 1 局結束</b><span>逐局比分</span></div>
+              <div class="line-score-scroll"><table id="lineScoreTable" class="line-score-table"></table></div>
+            </div>
             <div id="pitchResult" class="pitch-result hidden" aria-live="polite"></div>
             <div id="pitchChoices" class="pitch-choices"></div>
             <div id="matchLog" class="match-log"></div>
@@ -191,6 +213,6 @@
   <script src="src/state/save-repository.js?v=47"></script>
   <script src="src/app-bootstrap.js?v=47"></script>
   <script src="story-config.js?v=3"></script>
-  <script src="game.js?v=47"></script>
+  <script src="game.js?v=48"></script>
 </body>
 </html>
