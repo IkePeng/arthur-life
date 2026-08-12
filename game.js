@@ -14,7 +14,6 @@ const birdRoster=Object.fromEntries(Object.entries(legacyBirdRoster).map(([id,ol
 let selectedBird = null;
 
 const statLabels = Object.fromEntries((v47.stats||[]).map(x=>[x.id,x.name]));
-const proAbilityRequirements=Object.fromEntries((v47.scouting?.leagues||[]).map(x=>[x.id,x.minOverallGrade]));
 const legacyChapters = [
   { name: "菜鳥的夏天", place: "國中一年級 · 青葉中學", age: 13, intro:"你從一個連背號都沒有的新人開始。這三年，每一顆球都在替高中之路累積籌碼。", transition:"完成國中三年養成，收到高中球隊邀請" },
   { name: "甲子園之路", place: "高中二年級 · 海風高中", age: 17, intro:"國中畢業後，你離開熟悉的球場。高中更重的訓練、更強的打者，開始把天賦磨成真正能力。", transition:"高中畢業，球探報告與升學邀請同時寄達" },
@@ -553,11 +552,10 @@ function grade(n) { return (v47.ratings?.grades||[{id:"SS",min:92},{id:"S",min:8
 
 function render() {
   const ch=chapters[state.chapter], bird=birdRoster[state.bird], careerPlace=state.chapter>=4?`${currentLeague()} · ${schoolYearLabel()}`:schoolYearLabel(); $("#displayName").textContent=state.name; $("#playerPosition").textContent=`${state.position} · ${bird.label}`; $("#careerLine").textContent=`${state.age} 歲 · ${careerPlace} · ${bird.bonus}`; $("#avatar").innerHTML=`<img src="${bird.src}" alt="${bird.label}" onerror="this.onerror=null;this.src='assets/bird-heavy-88.webp?v=2'">`;
-  $("#overall").textContent=grade(overallScore());
+  const overallGrade=grade(overallScore()),overallBadge=$("#overall");overallBadge.textContent=overallGrade;overallBadge.className=`rank-badge rank-${overallGrade.toLowerCase()}`;overallBadge.setAttribute("aria-label",`綜合評價 ${overallGrade}`);
   $("#stats").innerHTML=Object.entries(state.stats).filter(([k])=>!['spirit','health','luck'].includes(k)).map(([k,v])=>`<div class="stat"><div class="stat-head"><span>${statLabels[k]}</span><b>${v}</b></div><div class="stat-track"><i style="width:${Math.min(100,v)}%"></i></div></div>`).join("");
   $("#pitchList").innerHTML=state.pitches.map((p,i)=>`<span class="pitch-chip ${i===state.pitches.length-1&&state.pitches.length>1?'new':''}">${p}</span>`).join(""); $("#pitchCount").textContent=`${state.pitches.length} / 8`;
   $("#abilityList").innerHTML=(state.special||[]).map(x=>`<span class="ability-chip">★ ${x}</span>`).join("")||'<span class="ability-empty">尚未獲得</span>';
-  const currentGrade=grade(overallScore()),leagues=v47.scouting?.leagues||[],rank=(v47.ratings?.grades||[]).map(x=>x.id),qualifies=required=>rank.indexOf(currentGrade)<=rank.indexOf(required),nextLeague=leagues.find(x=>!qualifies(x.minOverallGrade));$("#proThreshold").innerHTML=state.chapter<1?"":nextLeague?`綜合評價 <b>${currentGrade}</b>｜下一個職業門檻 <strong>${nextLeague.name} ${nextLeague.minOverallGrade}</strong>`:`綜合評價 <b>${currentGrade}</b>｜已達所有職業評價門檻`;
   $("#fameValue").textContent=state.fame; $("#moneyValue").textContent=state.money+" 萬"; $("#fansValue").textContent=state.fans>=10000?(state.fans/10000).toFixed(1)+"萬":state.fans;
   const seasonPhase=state.turn>=state.chapterRounds?"季末比賽":state.turn===0?"季初養成":"賽季中";$("#chapterLabel").textContent=`${schoolYearLabel()} · ${seasonPhase}`; $("#seasonLabel").textContent=`${ch.name} · ${state.age} 歲`; $("#weekLabel").textContent=state.turn>=state.chapterRounds?"年度決戰":`第 ${state.turn+1} / ${state.chapterRounds} 回合`; $("#progressBar").style.width=`${Math.min(100,(state.turn+1)/(state.chapterRounds+1)*100)}%`;
   $("#timelineItems").innerHTML=state.timeline.slice(-8).map(x=>`<span class="timeline-item">● ${x}</span>`).join(""); $("#achievementCount").textContent=`${Math.max(0,state.timeline.length-1)} 個里程碑`;
