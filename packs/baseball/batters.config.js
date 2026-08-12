@@ -1,13 +1,31 @@
 (function (c) {
   c.batters = [
-    {id:"slugger",name:"強打者",contact:.105,patience:.015,fast:.045,homeRunAdjustment:.035,quotes:["別躲了，丟進來吧。","這球我一定要送出去。","投進來，我在等你的直球。"]},
-    {id:"patient",name:"選球型",contact:-.01,patience:.105,quotes:["我不急，先看你敢不敢投好球。","壞球我一顆都不追。","滿球數也沒關係，我比你更有耐心。"]},
-    {id:"fastball_hunter",name:"直球型",contact:.035,fast:.105,breaking:-.025,quotes:["你的直球，我已經抓到節奏了。","再來一顆快的。","測速再快，也得經過我的棒子。"]},
-    {id:"breaking_hunter",name:"變化球型",contact:.025,fast:-.02,breaking:.1,quotes:["那顆變化球，我看得很清楚。","別以為低球能騙到我。","我就在等你最有自信的球。"]},
-    {id:"aggressive",name:"積極型",contact:-.045,patience:-.055,quotes:["第一顆就來決勝負吧。","不用試探，我準備好了。","只要進來我就會出棒。"]},
-    {id:"contact",name:"纏鬥型",contact:.04,patience:.035,foul:.09,quotes:["想三振我？你還得再投幾顆。","我會一直纏到你失投。","上一球沒抓到，下一球不會了。"]},
-    {id:"slump",name:"低潮型",contact:-.075,patience:.005,quotes:["手感不好，但我不能退。","只要一支安打就能重新開始。","隊友都回來了，現在輪到我。"]}
+    {id:"slugger",name:"強打者",contact:.105,patience:.015,fast:.045,homeRunAdjustment:.035,quotes:["外野手可以退到觀眾席了，這球會飛很遠。","球僮，準備拿一顆新球吧。","這座球場對我來說太小了。","你只要想好，球飛出去時要不要回頭看。"]},
+    {id:"patient",name:"選球型",contact:-.01,patience:.105,quotes:["我不急，先看你敢不敢投好球。","投準一點，我可不想站在這裡揮空氣。","別浪費時間投壞球了。","捕手可以往前蹲一點，反正他的球沒尾勁。"]},
+    {id:"fastball_hunter",name:"直球型",contact:.035,fast:.105,breaking:-.025,quotes:["你的直球怎麼像在倒帶？","再來一顆快的，剛才那顆還不夠。","測速再快，也得經過我的棒子。","把最好的直球拿出來，不然我連汗都流不到。"]},
+    {id:"breaking_hunter",name:"變化球型",contact:.025,fast:-.02,breaking:.1,quotes:["剛才那顆是滑球，還是你滑倒了？","那顆變化球，我看得很清楚。","這就是你賭上一切的決勝球嗎？我收下了。","別以為低球能騙到我。"]},
+    {id:"aggressive",name:"積極型",contact:-.045,patience:-.055,quotes:["來啊！第一顆就決勝負。","別躲了，把球投進來！","只要進來我就會出棒。","下一球，我會把它轟到大氣層外。"]},
+    {id:"contact",name:"纏鬥型",contact:.04,patience:.035,foul:.09,quotes:["想三振我？你還得再投幾顆。","我會一直纏到你失投。","就憑這種半吊子的球，也想三振我？","別讓我太無聊，拿出真正的決勝球。"]},
+    {id:"slump",name:"低潮型",contact:-.075,patience:.005,quotes:["手感不好，但打你應該夠了。","只要一支安打就能重新開始。","你的眼神在害怕啊，投手。","今天就拿你找回手感。"]}
   ];
+  c.batterTrashTalk = {
+    chance:.72,
+    control:["你找不到好球帶嗎？","別躲了，把球投進來！","投準一點好嗎？","四壞也算你的本事嗎？"],
+    strike:["就這樣而已嗎？","這顆只是讓你運氣好。","下一球我就抓到了。","別得意，勝負還沒結束。"],
+    twoStrikes:["兩好球又怎樣？你還差最後一顆。","想三振我？太天真了！","來吧，讓我看看你的決勝球。","你的眼神在害怕啊，投手。"],
+    foul:["我會一直纏到你失投。","差一點，下一球就是我的。","用球數快撐不住了吧？","你的決勝球我已經看懂了。"],
+    hit:["我早就知道你會投這顆。","外野手站得還不夠遠。","就說了，這座球場太小。","下一次記得投遠一點。"],
+    general:["來啊！","把你最好的球拿出來。","別讓我太無聊。","你只有這點本事嗎？"],
+    byType:{
+      slugger:["球僮，先準備下一顆球。","外野手可以再退十步。"],
+      patient:["我有一整晚可以等你投好球。","急的是你，不是我。"],
+      fastball_hunter:["再投直球，我保證讓它回不來。","你的直球已經沒有秘密了。"],
+      breaking_hunter:["滑球再多轉一點，也許我才會揮空。","這種變化幅度騙不了我。"],
+      aggressive:["不用配球，直接來！","下一顆就分勝負。"],
+      contact:["你今天不可能三振我。","我會把你的用球數磨光。"],
+      slump:["再差的手感，也打得到這種球。","就拿你當我的復健賽。"]
+    }
+  };
   c.lineupProfiles = [
     {spot:1,role:"開路先鋒",contactAdjustment:.018,patienceAdjustment:.015,homeRunChance:.035,preferredTypes:["contact","patient","aggressive"]},
     {spot:2,role:"推進型打者",contactAdjustment:.006,patienceAdjustment:.020,homeRunChance:.025,preferredTypes:["contact","patient"]},

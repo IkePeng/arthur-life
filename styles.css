@@ -583,6 +583,7 @@ label>span{color:#214c80}.start-card>.primary-btn{position:absolute;z-index:6;ri
 .event-icon{display:none!important}
 .event-content{padding-top:24px;background:linear-gradient(#eaf7ff,#dcefff)}
 .player-panel #restartBtn{margin-top:28px}
+.start-version{position:absolute;z-index:8;top:14px;right:16px;padding:5px 9px;border:2px solid rgba(255,255,255,.85);border-radius:999px;background:rgba(4,51,112,.88);color:#ffe15a;font-size:9px;font-weight:900;letter-spacing:.12em;box-shadow:0 3px 0 rgba(2,29,72,.55)}
 
 @media (max-width: 600px) {
   .brand { width: calc(100% - 48px); min-height: 82px; padding: 5px 16px 13px 7px; margin-bottom: 2px; gap: 7px; }

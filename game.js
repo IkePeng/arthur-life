@@ -436,6 +436,18 @@ function pitchComment(message,b){
   if(/好球/.test(message))return b.strikes===2?"捕手把球傳回：『他被逼到兩好球了。』":pick(["主審拉弓：『好球！』","打者看著球進手套，沒有出棒。"]);
   return "捕手重新比出暗號，下一球的選擇又開始了。";
 }
+function batterTrashTalk(message,b){
+  const cfg=v47.batterTrashTalk||{},pick=a=>a?.length?a[Math.floor(rng()*a.length)]:"";
+  if(!cfg||rng()>(cfg.chance??.65)||/三振|雙殺|出局|接殺|犧牲打/.test(message))return "";
+  let pool=cfg.general||[];
+  if(/全壘打|安打/.test(message))pool=cfg.hit||pool;
+  else if(/壞球|保送/.test(message))pool=cfg.control||pool;
+  else if(/界外/.test(message))pool=cfg.foul||pool;
+  else if(b.strikes>=2)pool=cfg.twoStrikes||pool;
+  else if(/好球|揮空/.test(message))pool=cfg.strike||pool;
+  const personal=cfg.byType?.[b.id]||[];
+  return pick(personal.length&&rng()<.38?personal:pool);
+}
 function classifyPitchResult(message){
   if(/一球入魂|三振/.test(message))return {label:"三振出局",icon:"🔥",tone:"pitch-win"};
   if(/雙殺/.test(message))return {label:"滾地雙殺",icon:"✌️",tone:"pitch-win"};
@@ -468,7 +480,7 @@ function pitchBall(pitch) {
   else{b.strikes++;message=`${pitch} 擦過邊角｜好球 ${b.strikes}`;if(b.strikes>=rules.strikesPerOut){b.ks++;b.outs++;message=`站著三振！${pitch} 鎖住邊角`;plateEnded=true;}}
   const resultType=classifyPitchResult(message),countAfter=`${b.balls} 壞 ${b.strikes} 好`,stateChange=plateEnded?`打席結束｜出局 ${outsBefore} → ${b.outs}｜${baseSituation(b.runners)}${b.runs>runsBefore?`｜本球失 ${b.runs-runsBefore} 分`:""}`:`球數 ${ballsBefore} 壞 ${strikesBefore} 好 → ${countAfter}`;
   m.lastPitchResult={...resultType,message,detail:stateChange};
-  const commentary=pitchComment(message,b);m.log.push(`第 ${gameInning} 局上｜第 ${lineupSpot(b.batters)} 棒｜投球前 ${countBefore}、${outsBefore} 出局｜${resultType.label}｜${message}${b.outs!==outsBefore?`｜目前 ${b.outs} 出局`:""}\n${commentary}`);
+  const commentary=pitchComment(message,b),trashTalk=batterTrashTalk(message,b);m.log.push(`第 ${gameInning} 局上｜第 ${lineupSpot(b.batters)} 棒｜投球前 ${countBefore}、${outsBefore} 出局｜${resultType.label}｜${message}${b.outs!==outsBefore?`｜目前 ${b.outs} 出局`:""}\n${commentary}${trashTalk?`\n打者垃圾話：「${trashTalk}」`:""}`);
   if(plateEnded&&b.outs<rules.outsPerHalfInning)m.batter=newBatterState(b);
   const hook=v47.matchBalance?.hook||{},trouble=b.hits+b.walks+b.runs*1.5,hookRisk=b.hits>=(hook.hits??3)||b.runs>=(hook.runs??3)||b.walks>=(hook.walks??3)||trouble>=(hook.trouble??5);
   if(b.outs<rules.outsPerHalfInning&&hookRisk&&!m.moundVisit){m.moundVisit=true;m.log.push(`教練第一次走上投手丘。捕手低聲說：「先抓一個出局，我們還沒放棄你。」`);renderMatch();save();beep(300);return;}
@@ -483,7 +495,7 @@ function pitchBall(pitch) {
 }
 function updateHiddenPitchAbilities(pitch,m){
   const unlock=id=>(v47.abilities||[]).find(x=>x.id===id)?.unlock||{};
-  if(pitch==="四縫線直球"){state.fourSeamStreak=(state.fourSeamStreak||0)+1;state.sinkerStreak=0;const need=unlock("一球入魂").atLeast||50;if(state.fourSeamStreak>=need&&!state.special.includes("一球入魂")){state.special.push("一球入魂");state.timeline.push("特殊能力覺醒：一球入魂");m.log.push(`特殊能力覺醒｜連續第 ${need} 顆四縫線直球進入手套。「一球入魂」啟動，兩好球後的四縫線將成為必殺球。`);render();}}
+  if(pitch==="四縫線直球"){state.fourSeamStreak=(state.fourSeamStreak||0)+1;state.sinkerStreak=0;const need=unlock("一球入魂").atLeast||200;if(state.fourSeamStreak>=need&&!state.special.includes("一球入魂")){state.special.push("一球入魂");state.timeline.push("特殊能力覺醒：一球入魂");m.log.push(`特殊能力覺醒｜連續第 ${need} 顆四縫線直球進入手套。「一球入魂」啟動，兩好球後的四縫線將成為必殺球。`);render();}}
   else if(pitch==="伸卡球"){state.sinkerStreak=(state.sinkerStreak||0)+1;state.fourSeamStreak=0;const need=unlock("王建民").atLeast||10;if(state.sinkerStreak>=need&&!state.special.includes("王建民")){state.special.push("王建民");state.timeline.push("特殊能力覺醒：王建民");m.log.push(`特殊能力覺醒｜連續第 ${need} 顆伸卡球猛烈下沉。「王建民」啟動，伸卡球只要被打進場內，就一定轉化為滾地出局。`);render();}}
   else if(pitch==="滑球"){state.sliderPitchCount=(state.sliderPitchCount||0)+1;state.fourSeamStreak=0;state.sinkerStreak=0;const need=unlock("大谷翔平").atLeast||50;if(state.sliderPitchCount>=need&&!state.special.includes("大谷翔平")){state.special.push("大谷翔平");state.timeline.push("特殊能力覺醒：大谷翔平");m.log.push(`特殊能力覺醒｜生涯第 ${need} 顆滑球劃過本壘板。「大谷翔平」啟動，面對每位新打者時，第一顆滑球必定是好球。`);render();}}
   else{state.fourSeamStreak=0;state.sinkerStreak=0;}
