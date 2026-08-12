@@ -43,14 +43,14 @@
         </label>
         <div class="origin-summary" aria-live="polite">
           <span>出生背景</span>
-          <strong id="originName">資本雄厚</strong>
-          <small id="originBonus">資金充裕 · 頂級設備 · 訓練開銷減免</small>
+          <strong id="originName">尚未揭曉</strong>
+          <small id="originBonus">取好名字、踏上球場後，由命運隨機決定</small>
         </div>
       </div>
 
       <button id="startBtn" class="primary-btn" type="button">踏上球場 <span>→</span></button>
       <div class="mode-dock random-origin" aria-label="系統隨機決定的球員出生背景">
-        <div class="bird-option active" id="randomBirdCard"><img src="assets/bird-pitcher.webp?v=5" alt=""><b>命運揭曉</b></div>
+        <div class="bird-option active mystery-bird" id="randomBirdCard"><span>？</span><b>等待出生</b></div>
       </div>
       <p class="fine-print">遊戲會自動保存在此裝置</p>
       <button id="continueBtn" class="text-btn hidden" type="button">繼續上次的人生</button>
@@ -115,6 +115,29 @@
           </div>
         </article>
 
+        <article id="matchCard" class="match-card card hidden">
+          <div class="match-head">
+            <div><span id="matchRole">先發投手</span><h2 id="matchTitle">章末正式比賽</h2></div>
+            <div class="match-score"><span>我方 <b id="teamRuns">0</b></span><span>對手 <b id="oppRuns">0</b></span></div>
+          </div>
+          <div class="match-body">
+            <p id="inningLabel" class="eyebrow">第 1 局</p>
+            <h3 id="matchPrompt">選擇這局的主戰球種</h3>
+            <p id="matchStatus">球場燈光亮起，你走上投手丘。</p>
+            <div id="pitchChoices" class="pitch-choices"></div>
+            <div id="matchLog" class="match-log"></div>
+            <button id="nextInningBtn" class="primary-btn hidden" type="button">下一局 <span>→</span></button>
+          </div>
+        </article>
+
+        <article id="skillCard" class="skill-card card hidden">
+          <p class="eyebrow">SKILL POINTS</p>
+          <h2>分配比賽獲得的技能點</h2>
+          <p id="skillSummary">本場獲得 <b id="skillPointsValue">0</b> 點，分配完成後才能進入下一章。</p>
+          <div id="skillAllocations" class="skill-allocations"></div>
+          <button id="confirmSkillsBtn" class="primary-btn" type="button">確認分配並進入下一章</button>
+        </article>
+
         <div class="timeline card">
           <div class="timeline-head">
             <h3>生涯足跡</h3>
@@ -138,6 +161,6 @@
       <p id="copyHint" class="fine-print"></p>
     </section>
   </main>
-  <script src="game.js?v=17"></script>
+  <script src="game.js?v=18"></script>
 </body>
 </html>
