@@ -21,7 +21,7 @@
       (ch.startingAbilities||[]).forEach(id=>assert(abilityIds.has(id),`characters.${ch.id}：未知特殊能力 ${id}`,errors));
     });
     (c.characters||[]).forEach(ch=>["power","contact","speed","fielding"].forEach(k=>{const r=ch.initialStats?.[k];assert(r?.min===10&&r?.max===30,`characters.${ch.id}.${k}：初始可見能力必須是 10～30`,errors);}));
-    (c.abilities||[]).forEach(a=>{if(!a.hiddenUntilUnlocked)return;assert(typeof a.unlock?.counter==="string"&&a.unlock.counter,`abilities.${a.id}：隱藏能力缺少 counter`,errors);assert((c.pitches||[]).some(p=>p.name===a.unlock?.pitch),`abilities.${a.id}：隱藏能力球種不存在`,errors);assert(Number.isFinite(a.unlock?.atLeast)&&a.unlock.atLeast>0,`abilities.${a.id}：隱藏能力門檻不合法`,errors);});
+    (c.abilities||[]).forEach(a=>{if(!a.hiddenUntilUnlocked)return;assert(typeof a.unlock?.counter==="string"&&a.unlock.counter,`abilities.${a.id}：隱藏能力缺少 counter`,errors);assert((c.pitches||[]).some(p=>p.name===a.unlock?.pitch),`abilities.${a.id}：隱藏能力球種不存在`,errors);assert(Number.isFinite(a.unlock?.atLeast)&&a.unlock.atLeast>0,`abilities.${a.id}：隱藏能力門檻不合法`,errors);assert(Number.isFinite(a.unlock?.minVelocityKmh)&&a.unlock.minVelocityKmh>=150,`abilities.${a.id}：特殊能力至少需要 150 km/h`,errors);});
     const checkEvent=(e,label)=>{assert(e&&e.title&&e.text,`${label}：缺少 title 或 text`,errors);assert(Array.isArray(e?.choices)&&e.choices.length>=2,`${label}：至少需要 2 個選項`,errors);(e?.choices||[]).forEach((choice,i)=>assert(Array.isArray(choice)&&typeof choice[0]==="string"&&choice[1]&&typeof choice[1]==="object",`${label}.choices[${i}]：格式錯誤`,errors));};
     assert((c.storyEvents||[]).length>=(c.chapters||[]).length*4,"story-events.config.js：每章至少需要 4 個主線關卡",errors);
     (c.chapters||[]).forEach(ch=>{assert(Array.isArray(ch.ages)&&ch.ages.length,`chapters.${ch.id}：缺少年齡列表`,errors);assert(typeof ch.background==="string"&&ch.background,`chapters.${ch.id}：缺少球場背景`,errors);});
@@ -40,6 +40,7 @@
     assert(gradeIds.has("SS")&&gradeIds.has("S")&&gradeIds.has("A")&&gradeIds.has("B"),"ratings.config.js：評價等級不完整",errors);
     assert((c.scouting?.leagues||[]).every(x=>gradeIds.has(x.minOverallGrade)),"scouting.config.js：邀約綜合評價門檻不完整",errors);
     ["amateur","cpbl","npb","mlb","return"].forEach(league=>["star","international"].forEach(tier=>{const range=c.economy?.endorsements?.[league]?.[tier];assert(Array.isArray(range)&&range.length===2&&range.every(Number.isFinite)&&range[0]<=range[1],`economy.config.js：${league}.${tier} 代言級距不完整`,errors);}));
+    const termination=c.economy?.endorsementTermination;assert(termination&&Number.isFinite(termination.controversyRefundRate)&&termination.controversyRefundRate>0&&termination.controversyRefundRate<=1,"economy.config.js：代言爭議解約比例不完整",errors);
     if(errors.length)throw new Error(`v48 設定檔驗證失敗\n${errors.map((x,i)=>`${i+1}. ${x}`).join("\n")}`);
     return true;
   }

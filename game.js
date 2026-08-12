@@ -32,6 +32,8 @@ function statValueMarkup(key,value){
   const measurement=statMeasurement(key,value);
   return measurement?`<b class="stat-value-with-unit"><span>${value}</span><small>${measurement.text}</small></b>`:`<b>${value}</b>`;
 }
+function actualVelocityKmh(){return statMeasurement("speed",state.stats.speed)?.value||0;}
+function pitchingAbilityActive(id){const ability=(v47.abilities||[]).find(x=>x.id===id),minimum=ability?.unlock?.minVelocityKmh||0;return state.special.includes(id)&&actualVelocityKmh()>=minimum;}
 const legacyChapters = [
   { name: "菜鳥的夏天", place: "國中一年級 · 青葉中學", age: 13, intro:"你從一個連背號都沒有的新人開始。這三年，每一顆球都在替高中之路累積籌碼。", transition:"完成國中三年養成，收到高中球隊邀請" },
   { name: "甲子園之路", place: "高中二年級 · 海風高中", age: 17, intro:"國中畢業後，你離開熟悉的球場。高中更重的訓練、更強的打者，開始把天賦磨成真正能力。", transition:"高中畢業，球探報告與升學邀請同時寄達" },
@@ -196,6 +198,13 @@ function endorsementValue(tier="star"){
   const influence=Math.max(0,Math.min(1,fame*.55+audience*.30+luck*.10+(rng()-.5)*.10)),business=birdRoster[state.origin].business||1;
   return Math.round(Math.min(range[1],(range[0]+(range[1]-range[0])*influence)*business)/10)*10;
 }
+function endorsementTerminationValue(reason="controversy"){
+  const rules=v47.economy?.endorsementTermination||{},contracts=state.endorsementContracts||[],active=[...contracts].reverse().find(x=>!x.terminated),league=state.careerPath||"amateur";
+  const fallback=v47.economy?.endorsements?.[league]?.star?.[0]||30,base=active?.amount||fallback;
+  const rate=reason==="controversy"?(rules.controversyRefundRate??.40):(rules.voluntaryTerminationRate??.65),round=rules.roundTo||10;
+  const fee=Math.max(round,Math.round(base*rate/round)*round);if(active){active.terminated=true;active.terminationFee=fee;active.terminationReason=reason;}
+  return {fee,base,hadContract:Boolean(active)};
+}
 function contractIncentiveValue(tier="high"){
   const league=state.careerPath||"amateur",range=v47.economy?.contractIncentives?.[league]||[20,80],ratio=tier==="travel"?.2:.65+Math.max(0,Math.min(.35,state.fame/300));
   return Math.round((range[0]+(range[1]-range[0])*ratio)/10)*10;
@@ -312,7 +321,8 @@ function choose(i) {
     if(k==="pitch") { if(v&&!state.pitches.includes(v)) state.pitches.push(v); if(v) parts.push(`<span class="delta">習得球種：${v}</span>`); continue; }
     if(k==="ability") { if(v&&!state.special.includes(v))state.special.push(v);if(v)parts.push(`<span class="delta">獲得特殊能力：${v}</span>`);continue; }
     if(k==="mysteryPotion") { const potion=drinkMysteryPotion(v);parts.push(`<span class="delta ${potion.change<0?'negative':''}">${potion.text}</span>`);continue; }
-    if(k==="endorsement") { const fee=endorsementValue(v);state.money+=fee;parts.push(`<span class="delta">${v==="international"?"國際品牌":"品牌"}代言費 新台幣 ${fee.toLocaleString()} 萬</span>`);state.timeline.push(`簽下代言合約：新台幣 ${fee.toLocaleString()} 萬元`);continue; }
+    if(k==="endorsement") { const fee=endorsementValue(v);state.money+=fee;state.endorsementContracts=state.endorsementContracts||[];state.endorsementContracts.push({tier:v,amount:fee,league:state.careerPath||"amateur",age:state.age,terminated:false});parts.push(`<span class="delta">${v==="international"?"國際品牌":"品牌"}代言費 新台幣 ${fee.toLocaleString()} 萬</span>`);state.timeline.push(`簽下代言合約：新台幣 ${fee.toLocaleString()} 萬元`);continue; }
+    if(k==="endorsementTermination") { const x=endorsementTerminationValue(v);state.money=Math.max(0,state.money-x.fee);parts.push(`<span class="delta negative">代言解約金 新台幣 ${x.fee.toLocaleString()} 萬（原合約 ${x.base.toLocaleString()} 萬）</span>`);state.timeline.push(`代言解約：支付新台幣 ${x.fee.toLocaleString()} 萬元`);continue; }
     if(k==="contractIncentive") { const fee=contractIncentiveValue(v);state.money+=fee;parts.push(`<span class="delta">合約附加保障 新台幣 ${fee.toLocaleString()} 萬</span>`);continue; }
     if(k==="careerPath") { if(v){state.careerPath=v;parts.push(`<span class="delta">職業道路：${currentLeague()}</span>`);state.timeline.push(`加盟${currentLeague()}`);} continue; }
     if(k==="signingBonus") { state.money+=v;parts.push(`<span class="delta">簽約金 新台幣 ${v.toLocaleString()} 萬</span>`);state.timeline.push(`獲得${currentLeague()}簽約金新台幣 ${v.toLocaleString()} 萬元`);continue; }
@@ -428,7 +438,7 @@ function renderMatch() {
   const entrySummary=m.entrySummary||`第 ${m.startInning||gameInning} 局上、${m.inningStartOuts||0} 出局、${baseSituation(m.batter?.runners||[])}`;
   $("#matchStatus").textContent=m.inning>m.total?`你完成 ${m.total} 局投球，失 ${m.runs} 分。`:`接替登板：${entrySummary}｜目前第 ${m.batter.lineupSpot||lineupSpot(m.batter.batters)} 棒 · ${m.batter.lineupRole||m.batter.name}（${m.batter.name}）：「${m.batter.quote}」`;
   const last=m.lastPitchResult;$("#pitchResult").className=`pitch-result ${last?last.tone:"hidden"}`;$("#pitchResult").innerHTML=last?`<span>${last.icon}</span><div><b>${last.label}</b><strong>${last.message}</strong><small>${last.detail}</small></div>`:"";
-  $("#pitchChoices").innerHTML=m.inning>m.total?"":state.pitches.map(p=>{const x=livePitchRisk(p,m.batter,m),ability=p==="四縫線直球"&&state.special.includes("一球入魂")?" · 一球入魂已啟動":p==="伸卡球"&&state.special.includes("王建民")?" · 王建民已啟動":p==="滑球"&&state.special.includes("大谷翔平")?" · 大谷翔平已啟動":"";return `<button class="pitch-choice" data-pitch="${p}"><b>${p}</b><small>本球預估被打擊率 <strong>${x.hit.toFixed(3).replace(/^0/,"")}</strong></small><em>${x.note}${ability}</em></button>`}).join("");
+  $("#pitchChoices").innerHTML=m.inning>m.total?"":state.pitches.map(p=>{const x=livePitchRisk(p,m.batter,m),id=p==="四縫線直球"?"一球入魂":p==="伸卡球"?"王建民":p==="滑球"?"大谷翔平":"",ability=id&&state.special.includes(id)?` · ${id}${pitchingAbilityActive(id)?"已啟動":"暫停（需 150 km/h）"}`:"";return `<button class="pitch-choice" data-pitch="${p}"><b>${p}</b><small>本球預估被打擊率 <strong>${x.hit.toFixed(3).replace(/^0/,"")}</strong></small><em>${x.note}${ability}</em></button>`}).join("");
   document.querySelectorAll(".pitch-choice").forEach(b=>b.addEventListener("click",()=>window.V47FlowController.dispatch(state,"THROW_PITCH",b.dataset.pitch)));
   $("#matchLog").innerHTML=m.log.slice(-5).map(x=>`<p>${x.replace(/\n/g,"<br>")}</p>`).join(""); $("#nextInningBtn").classList.add("hidden");
 }
@@ -482,9 +492,9 @@ function pitchBall(pitch) {
   window.V47FlowController.assert(state.phase,"THROW_PITCH");
   const m=state.match,b=m.batter,risk=livePitchRisk(pitch,b,m),ballP=risk.ball,contactP=risk.hit,swingP=.48+b.strikes*.1-b.balls*.03,gameInning=(m.startInning||1)+m.inning-1,countBefore=`${b.balls} 壞 ${b.strikes} 好`,ballsBefore=b.balls,strikesBefore=b.strikes,outsBefore=b.outs,runsBefore=b.runs; let message="",plateEnded=false;b.pitches++;
   updateHiddenPitchAbilities(pitch,m);
-  const onePitchSoul=pitch==="四縫線直球"&&state.special.includes("一球入魂")&&b.strikes>=2;
-  const wangGroundball=pitch==="伸卡球"&&state.special.includes("王建民");
-  const ohtaniFirstPitch=pitch==="滑球"&&state.special.includes("大谷翔平")&&ballsBefore===0&&strikesBefore===0;
+  const onePitchSoul=pitch==="四縫線直球"&&pitchingAbilityActive("一球入魂")&&b.strikes>=2;
+  const wangGroundball=pitch==="伸卡球"&&pitchingAbilityActive("王建民");
+  const ohtaniFirstPitch=pitch==="滑球"&&pitchingAbilityActive("大谷翔平")&&ballsBefore===0&&strikesBefore===0;
   const roll=rng();
   const rules=v47.baseballRules||{strikesPerOut:3,ballsPerWalk:4,outsPerHalfInning:3};
   if(onePitchSoul){b.strikes=rules.strikesPerOut;b.ks++;b.outs++;message=`一球入魂！兩好球後的四縫線直球穿過揮棒，打者三振出局`;plateEnded=true;}
@@ -529,9 +539,10 @@ function pitchBall(pitch) {
 }
 function updateHiddenPitchAbilities(pitch,m){
   const unlock=id=>(v47.abilities||[]).find(x=>x.id===id)?.unlock||{};
-  if(pitch==="四縫線直球"){state.fourSeamStreak=(state.fourSeamStreak||0)+1;state.sinkerStreak=0;state.sliderStreak=0;const need=unlock("一球入魂").atLeast||200;if(state.fourSeamStreak>=need&&!state.special.includes("一球入魂")){state.special.push("一球入魂");state.timeline.push("特殊能力覺醒：一球入魂");m.log.push(`特殊能力覺醒｜連續第 ${need} 顆四縫線直球進入手套。「一球入魂」啟動，兩好球後的四縫線將成為必殺球。`);render();}}
-  else if(pitch==="伸卡球"){state.sinkerStreak=(state.sinkerStreak||0)+1;state.fourSeamStreak=0;state.sliderStreak=0;const need=unlock("王建民").atLeast||50;if(state.sinkerStreak>=need&&!state.special.includes("王建民")){state.special.push("王建民");state.timeline.push("特殊能力覺醒：王建民");m.log.push(`特殊能力覺醒｜連續第 ${need} 顆伸卡球猛烈下沉。「王建民」啟動，伸卡球只要被打進場內，就一定轉化為滾地出局。`);render();}}
-  else if(pitch==="滑球"){state.sliderStreak=(state.sliderStreak||0)+1;state.fourSeamStreak=0;state.sinkerStreak=0;const need=unlock("大谷翔平").atLeast||50;if(state.sliderStreak>=need&&!state.special.includes("大谷翔平")){state.special.push("大谷翔平");state.timeline.push("特殊能力覺醒：大谷翔平");m.log.push(`特殊能力覺醒｜連續第 ${need} 顆滑球劃過本壘板。「大谷翔平」啟動，面對每位新打者時，第一顆滑球必定是好球。`);render();}}
+  const canUnlock=id=>actualVelocityKmh()>=(unlock(id).minVelocityKmh||0);
+  if(pitch==="四縫線直球"){state.fourSeamStreak=(state.fourSeamStreak||0)+1;state.sinkerStreak=0;state.sliderStreak=0;const need=unlock("一球入魂").atLeast||200;if(state.fourSeamStreak>=need&&canUnlock("一球入魂")&&!state.special.includes("一球入魂")){state.special.push("一球入魂");state.timeline.push("特殊能力覺醒：一球入魂");m.log.push(`特殊能力覺醒｜球速達 ${actualVelocityKmh()} km/h，連續第 ${need} 顆四縫線直球進入手套。「一球入魂」啟動。`);render();}}
+  else if(pitch==="伸卡球"){state.sinkerStreak=(state.sinkerStreak||0)+1;state.fourSeamStreak=0;state.sliderStreak=0;const need=unlock("王建民").atLeast||50;if(state.sinkerStreak>=need&&canUnlock("王建民")&&!state.special.includes("王建民")){state.special.push("王建民");state.timeline.push("特殊能力覺醒：王建民");m.log.push(`特殊能力覺醒｜球速達 ${actualVelocityKmh()} km/h，連續第 ${need} 顆伸卡球猛烈下沉。「王建民」啟動。`);render();}}
+  else if(pitch==="滑球"){state.sliderStreak=(state.sliderStreak||0)+1;state.fourSeamStreak=0;state.sinkerStreak=0;const need=unlock("大谷翔平").atLeast||50;if(state.sliderStreak>=need&&canUnlock("大谷翔平")&&!state.special.includes("大谷翔平")){state.special.push("大谷翔平");state.timeline.push("特殊能力覺醒：大谷翔平");m.log.push(`特殊能力覺醒｜球速達 ${actualVelocityKmh()} km/h，連續第 ${need} 顆滑球劃過本壘板。「大谷翔平」啟動。`);render();}}
   else{state.fourSeamStreak=0;state.sinkerStreak=0;state.sliderStreak=0;}
 }
 function continueMatch() { window.V47FlowController.assert(state.phase,"CONTINUE_MATCH");state.match.betweenInnings=false;if(state.match.inning>state.match.total) finishMatch(); else renderMatch(); }

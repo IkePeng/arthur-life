@@ -9,6 +9,12 @@
       mlb:{star:[1000,12000],international:[6000,320000]},
       return:{star:[100,600],international:[300,1500]}
     },
+    endorsementTermination:{
+      controversyRefundRate:.40,
+      voluntaryTerminationRate:.65,
+      minimumFeeRate:.40,
+      roundTo:10
+    },
     contractIncentives:{amateur:[20,80],cpbl:[50,300],npb:[150,1000],mlb:[300,5000],return:[30,150]}
   };
 })(window.V47_CONFIG);
