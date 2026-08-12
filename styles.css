@@ -127,6 +127,7 @@ input:focus, select:focus { border-color: var(--green-2); box-shadow: 0 0 0 3px 
   .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
 }
 @media (max-width: 620px) {
+  .pitching-line.six{grid-template-columns:repeat(3,1fr)}.pitching-line.six small:nth-of-type(n+4){grid-row:auto}
   .shell { width: min(100% - 20px, 1160px); padding-top: 16px; }
   .brand { margin-bottom: 12px; }
   .start-card { padding: 38px 20px; min-height: 0; }
@@ -558,6 +559,10 @@ label>span{color:#214c80}.start-card>.primary-btn{position:absolute;z-index:6;ri
 .ability-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
 .ability-chip{display:inline-flex;align-items:center;padding:8px 12px;border:2px solid #f4a400;border-radius:999px;background:linear-gradient(180deg,#fff5a8,#ffc829);color:#6a3500;font-weight:900;box-shadow:0 3px 0 #d76710}
 .ability-empty{color:#64809e;font-size:14px;font-weight:700}
+.annual-training{display:block;margin:10px 0;padding:9px 11px;border-radius:10px;background:#fff7c7;color:#754900;font-weight:800}
+.pro-threshold{margin-top:14px;padding:10px 12px;border:2px solid #9acff1;border-radius:12px;background:#f5fbff;color:#315e8c;font-size:13px;font-weight:800}.pro-threshold:empty{display:none}.pro-threshold b{color:#0759bd}.pro-threshold strong{color:#ef5b25}
+.pitching-line.six{grid-template-columns:repeat(6,1fr)}.coach-evaluation{display:block;margin:10px 0;padding:12px 14px;border-left:5px solid #ff9a26;border-radius:8px;background:#fff3dc;color:#65421c;font-weight:800;line-height:1.65}
+.pitch-result{display:grid;grid-template-columns:48px 1fr;gap:10px;align-items:center;margin:12px 0;padding:12px;border:3px solid;border-radius:14px;box-shadow:0 4px 0 rgba(5,55,112,.18)}.pitch-result>span{font-size:32px;text-align:center}.pitch-result div{display:grid;gap:3px}.pitch-result b{font-size:19px}.pitch-result strong{font-size:13px;line-height:1.45}.pitch-result small{font-size:12px;font-weight:800}.pitch-result.pitch-win{background:#e8fff0;border-color:#22a45b;color:#075b31}.pitch-result.pitch-strike{background:#eeeaff;border-color:#7656db;color:#3d288e}.pitch-result.pitch-ball{background:#e5f5ff;border-color:#2596d8;color:#075b8d}.pitch-result.pitch-neutral{background:#f1f4f7;border-color:#8293a6;color:#425466}.pitch-result.pitch-danger{background:#fff0e8;border-color:#ef5b25;color:#8f2c0f}
 .setback{display:block;margin-top:12px;padding:10px 12px;border:2px solid #d74334;border-radius:11px;background:#fff0eb;color:#8b1e18}.setback b{color:#c52b20}.match-setback{font-size:12px;line-height:1.55}
 .match-result-title{display:block;margin:12px 0 8px;color:#e24d1c;font-size:20px;font-weight:900}.pitching-line{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin:10px 0;padding:10px;border-radius:12px;background:#fff;border:2px solid #7fc0e8;text-align:center}.pitching-line b{font-size:18px;color:#073d85}.pitching-line small{grid-row:2;color:#64748b;font-size:9px}.career-line{display:block;margin:8px 0 14px;padding:8px 10px;border-radius:9px;background:#073d85;color:#fff;font-weight:800}
 .event-visual{background-size:cover!important;background-position:center!important}.event-icon{display:none!important}
