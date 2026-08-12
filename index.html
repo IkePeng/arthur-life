@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Zilla+Slab:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=3" />
+  <link rel="stylesheet" href="styles.css?v=4" />
 </head>
 <body>
   <div class="grain" aria-hidden="true"></div>
@@ -23,9 +23,17 @@
     </header>
 
     <section id="startScreen" class="card start-card">
+      <div class="start-hud" aria-hidden="true">
+        <span><b>1</b> 年級</span><span><b>4</b> 月 1 週</span><span class="condition">狀態絕佳！</span>
+      </div>
+      <div class="hero-player" aria-hidden="true">
+        <div class="player-cap"><i>Y</i></div>
+        <div class="player-face"><i></i><i></i><b></b></div>
+        <div class="player-body">7</div>
+      </div>
       <div class="hero-copy">
-        <p class="tag">熱血育成模式・現在開打！</p>
-        <h2>逸群的棒球人生，從這一球開始！</h2>
+        <p class="tag">成功模式・現在開打！</p>
+        <h2>從無名菜鳥<br>成為球場傳奇</h2>
         <p>每一次選擇都會改變能力、名聲與命運。沒有標準答案，只有屬於你的棒球人生。</p>
       </div>
 
@@ -53,6 +61,9 @@
       </div>
 
       <button id="startBtn" class="primary-btn" type="button">踏上球場 <span>→</span></button>
+      <div class="mode-dock" aria-hidden="true">
+        <span>🏋️<b>練習</b></span><span>💤<b>休息</b></span><span>📈<b>能力</b></span><span>⚾<b>比賽</b></span>
+      </div>
       <p class="fine-print">遊戲會自動保存在此裝置</p>
       <button id="continueBtn" class="text-btn hidden" type="button">繼續上次的人生</button>
     </section>
@@ -134,6 +145,6 @@
       <p id="copyHint" class="fine-print"></p>
     </section>
   </main>
-  <script src="game.js?v=3"></script>
+  <script src="game.js?v=4"></script>
 </body>
 </html>
