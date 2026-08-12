@@ -2,7 +2,7 @@
   function assert(ok,message,errors){if(!ok)errors.push(message);}
   function validateConfig(c){
     const errors=[];
-    assert(c&&c.schemaVersion===47,"manifest.config.js：schemaVersion 必須是 47",errors);
+    assert(c&&c.schemaVersion===48,"manifest.config.js：schemaVersion 必須是 48",errors);
     ["stats","abilities","pitches","characters","chapters","storyEvents","annualEvents","extraRoundEvents","lifeEvents","batters"].forEach(k=>assert(Array.isArray(c?.[k])&&c[k].length,`${k}.config.js：不可為空`,errors));
     const ids=(items,label)=>{const seen=new Set();items.forEach((x,i)=>{assert(x&&typeof x.id==="string"&&x.id,`${label}[${i}]：缺少 id`,errors);assert(!seen.has(x.id),`${label}：id 重複 ${x.id}`,errors);seen.add(x.id);});return seen;};
     const statIds=ids(c.stats||[],"stats"),abilityIds=ids(c.abilities||[],"abilities"),pitchIds=ids(c.pitches||[],"pitches");ids(c.characters||[],"characters");ids(c.chapters||[],"chapters");ids(c.batters||[],"batters");
@@ -36,7 +36,7 @@
     const gradeIds=new Set((c.ratings?.grades||[]).map(x=>x.id));
     assert(gradeIds.has("SS")&&gradeIds.has("S")&&gradeIds.has("A")&&gradeIds.has("B"),"ratings.config.js：評價等級不完整",errors);
     assert((c.scouting?.leagues||[]).every(x=>gradeIds.has(x.minOverallGrade)),"scouting.config.js：邀約綜合評價門檻不完整",errors);
-    if(errors.length)throw new Error(`v47 設定檔驗證失敗\n${errors.map((x,i)=>`${i+1}. ${x}`).join("\n")}`);
+    if(errors.length)throw new Error(`v48 設定檔驗證失敗\n${errors.map((x,i)=>`${i+1}. ${x}`).join("\n")}`);
     return true;
   }
   window.V47ConfigValidator={validate:validateConfig};

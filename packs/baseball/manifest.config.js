@@ -1,7 +1,7 @@
 (function () {
   window.V47_CONFIG = {
-    schemaVersion: 47,
-    gameVersion: "v47",
+    schemaVersion: 48,
+    gameVersion: "v48",
     packId: "baseball",
     title: "逸群的野球",
     saveKey: "baseballLifeSave",

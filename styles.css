@@ -582,6 +582,7 @@ label>span{color:#214c80}.start-card>.primary-btn{position:absolute;z-index:6;ri
 .event-visual::before{display:none!important}
 .event-icon{display:none!important}
 .event-content{padding-top:24px;background:linear-gradient(#eaf7ff,#dcefff)}
+.player-panel #restartBtn{margin-top:28px}
 
 @media (max-width: 600px) {
   .brand { width: calc(100% - 48px); min-height: 82px; padding: 5px 16px 13px 7px; margin-bottom: 2px; gap: 7px; }
