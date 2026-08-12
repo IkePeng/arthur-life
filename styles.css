@@ -531,6 +531,12 @@ label>span{color:#214c80}.start-card>.primary-btn{position:absolute;z-index:6;ri
 .random-origin .bird-option { width: 112px; height: 116px; grid-template-rows: 88px 21px; border-radius: 46% 46% 18px 18px; }
 .random-origin .bird-option img { width: 98px; height: 91px; }
 .random-origin .bird-option b { font-size: 11px; }
+.mystery-bird span { font-size: 58px; line-height: 1; color: #fff; -webkit-text-stroke: 3px #073d85; text-shadow: 3px 4px 0 #ff8b25; }
+.match-card,.skill-card { overflow: hidden; background: linear-gradient(#fafdff,#d8edff); }
+.match-head { padding: 18px 20px; display:flex; justify-content:space-between; gap:12px; color:#fff; background:linear-gradient(180deg,#147ede,#0649a1); }
+.match-head span { font-size:11px; font-weight:900; color:#ffe153; }.match-head h2{margin:3px 0 0;font-size:22px}.match-score{display:flex;gap:8px;align-items:center}.match-score span{padding:8px 10px;color:#073d85;background:#fff;border-radius:12px}.match-score b{font-size:22px;color:#ef581d}
+.match-body,.skill-card{padding:22px}.match-body h3,.skill-card h2{margin:6px 0 9px;color:#073d85}.pitch-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:18px 0}.pitch-choice{min-height:64px;padding:9px;border:2px solid #69b4e6;border-radius:14px;background:#fff;color:#073d85;box-shadow:0 3px 0 #3e87bd}.pitch-choice b,.pitch-choice small{display:block}.pitch-choice small{margin-top:3px;color:#64748b}.match-log{margin:14px 0}.match-log p{margin:5px 0;padding:8px 10px;border-radius:9px;background:#fff;color:#294968}
+.skill-allocations{display:grid;gap:8px;margin:18px 0}.skill-allocations>div{display:grid;grid-template-columns:1fr 38px 32px 38px;align-items:center;gap:6px;padding:9px 10px;background:#fff;border:2px solid #8ac5eb;border-radius:12px}.skill-allocations span b{margin-left:7px;color:#ef581d}.skill-allocations button{width:38px;height:36px;border:0;border-radius:9px;background:#187bd2;color:#fff;font-size:20px;font-weight:900}.skill-allocations button:disabled,.skill-card .primary-btn:disabled{opacity:.4}.skill-allocations strong{text-align:center;color:#073d85}
 
 @media (max-width: 600px) {
   .brand { width: calc(100% - 48px); min-height: 82px; padding: 5px 16px 13px 7px; margin-bottom: 2px; gap: 7px; }
@@ -554,6 +560,7 @@ label>span{color:#214c80}.start-card>.primary-btn{position:absolute;z-index:6;ri
   .random-origin { max-width: 150px; }
   .random-origin .bird-option { width: 94px; height: 100px; grid-template-rows: 74px 19px; }
   .random-origin .bird-option img { width: 82px; height: 77px; }
+  .match-head{padding:14px;align-items:flex-start}.match-head h2{font-size:18px}.match-score{gap:4px}.match-score span{padding:6px;font-size:9px}.match-score b{font-size:17px}.match-body,.skill-card{padding:17px 13px}.pitch-choices{grid-template-columns:1fr}.skill-allocations>div{grid-template-columns:1fr 36px 28px 36px;padding:8px}.skill-card>.primary-btn{width:100%;min-width:0}
 }
 
 @media (max-width: 360px) {
