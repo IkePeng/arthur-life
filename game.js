@@ -30,7 +30,7 @@ function statMeasurement(key,score){
 }
 function statValueMarkup(key,value){
   const measurement=statMeasurement(key,value);
-  return measurement?`<b class="stat-value-with-unit"><span>${value} 點</span><small>${measurement.text}</small></b>`:`<b>${value}</b>`;
+  return measurement?`<b class="stat-value-with-unit"><span>${value}</span><small>${measurement.text}</small></b>`:`<b>${value}</b>`;
 }
 const legacyChapters = [
   { name: "菜鳥的夏天", place: "國中一年級 · 青葉中學", age: 13, intro:"你從一個連背號都沒有的新人開始。這三年，每一顆球都在替高中之路累積籌碼。", transition:"完成國中三年養成，收到高中球隊邀請" },
@@ -585,7 +585,7 @@ function grade(n) { return (v47.ratings?.grades||[{id:"SS",min:92},{id:"S",min:8
 function render() {
   const ch=chapters[state.chapter], bird=birdRoster[state.bird], careerPlace=state.chapter>=4?`${currentLeague()} · ${schoolYearLabel()}`:schoolYearLabel(); $("#displayName").textContent=state.name; $("#playerPosition").textContent=`${state.position} · ${bird.label}`; $("#careerLine").textContent=`${state.age} 歲 · ${careerPlace} · ${bird.bonus}`; $("#avatar").innerHTML=`<img src="${bird.src}" alt="${bird.label}" onerror="this.onerror=null;this.src='assets/bird-heavy-88.webp?v=2'">`;
   const overallGrade=grade(overallScore()),overallBadge=$("#overall");overallBadge.textContent=overallGrade;overallBadge.className=`rank-badge rank-${overallGrade.toLowerCase()}`;overallBadge.setAttribute("aria-label",`綜合評價 ${overallGrade}`);
-  $("#stats").innerHTML=Object.entries(state.stats).filter(([k])=>!['spirit','health','luck'].includes(k)).map(([k,v])=>`<div class="stat"><div class="stat-head"><span>${statLabels[k]}</span>${statValueMarkup(k,v)}</div><div class="stat-track"><i style="width:${Math.min(100,v)}%"></i></div></div>`).join("");
+  $("#stats").innerHTML=Object.entries(state.stats).filter(([k])=>!['spirit','health','luck'].includes(k)).map(([k,v])=>`<div class="stat stat-${k}"><div class="stat-head"><span class="panel-stat-name"><i class="panel-stat-symbol" aria-hidden="true">${statIcons[k]}</i>${statLabels[k]}</span>${statValueMarkup(k,v)}</div><div class="stat-track"><i style="width:${Math.min(100,v)}%"></i></div></div>`).join("");
   $("#pitchList").innerHTML=state.pitches.map((p,i)=>`<span class="pitch-chip ${i===state.pitches.length-1&&state.pitches.length>1?'new':''}">${p}</span>`).join(""); $("#pitchCount").textContent=`${state.pitches.length} / ${v47.pitchLearning?.maxKnownPitches||8}`;
   $("#abilityList").innerHTML=(state.special||[]).map(x=>`<span class="ability-chip">★ ${x}</span>`).join("")||'<span class="ability-empty">尚未獲得</span>';
   $("#fameValue").textContent=state.fame; $("#moneyValue").textContent=state.money+" 萬"; $("#fansValue").textContent=state.fans>=10000?(state.fans/10000).toFixed(1)+"萬":state.fans;

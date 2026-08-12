@@ -59,7 +59,7 @@ input:focus, select:focus { border-color: var(--green-2); box-shadow: 0 0 0 3px 
 .game-layout { display: grid; grid-template-columns: 310px 1fr; gap: 20px; align-items: start; }
 .player-panel { padding: 24px; position: sticky; top: 18px; }
 .player-id { display: flex; align-items: center; gap: 14px; padding-bottom: 22px; border-bottom: 1px solid var(--line); }
-.avatar { flex: 0 0 auto; width: 92px; height: 100px; display: grid; place-items: center; border-radius: 38px 38px 23px 23px; color: var(--lime); background: var(--green); font: 700 25px "Zilla Slab"; position: relative; }
+.avatar { flex: 0 0 auto; width: 112px; height: 122px; display: grid; place-items: center; border-radius: 44px 44px 27px 27px; color: var(--lime); background: var(--green); font: 700 25px "Zilla Slab"; position: relative; }
 .avatar::after { content: ""; position: absolute; top: 17px; right: -5px; width: 18px; height: 8px; background: var(--green); border-radius: 0 10px 10px 0; transform: rotate(8deg); }
 .player-id h2 { margin: 3px 0; font-size: 21px; }
 .player-id > div:last-child > p:last-child { margin: 0; color: var(--muted); font-size: 12px; }
@@ -69,6 +69,12 @@ input:focus, select:focus { border-color: var(--green-2); box-shadow: 0 0 0 3px 
 .stat { margin: 13px 0; }
 .stat-head { display: flex; justify-content: space-between; font-size: 12px; }
 .stat-head b { color: var(--green); }
+.panel-stat-name { display: inline-flex; align-items: center; gap: 7px; font-weight: 900; }
+.panel-stat-symbol { width: 28px; height: 28px; display: inline-grid; place-items: center; flex: 0 0 auto; border: 2px solid #fff; border-radius: 9px; color: #fff; background: linear-gradient(#2da4f3,#0759bd); box-shadow: 0 3px 0 #063e84; font-size: 16px; font-style: normal; }
+.stat-power .panel-stat-symbol { background: linear-gradient(#ff7750,#e93722); box-shadow: 0 3px 0 #9e261b; }
+.stat-contact .panel-stat-symbol { background: linear-gradient(#46b5ff,#0866c8); box-shadow: 0 3px 0 #06418c; }
+.stat-speed .panel-stat-symbol { background: linear-gradient(#ffe15b,#f59e0b); box-shadow: 0 3px 0 #ad6200; }
+.stat-fielding .panel-stat-symbol { background: linear-gradient(#8f7dff,#5442c8); box-shadow: 0 3px 0 #352697; }
 .stat-value-with-unit { display: flex; flex-direction: column; align-items: flex-end; line-height: 1.05; }
 .stat-value-with-unit small { margin-top: 3px; color: #1474bd; font-size: 9px; font-weight: 900; white-space: nowrap; }
 .stat-track { height: 7px; margin-top: 6px; overflow: hidden; border-radius: 99px; background: #e6e8de; }
@@ -344,7 +350,7 @@ label>span{color:#214c80}.start-card>.primary-btn{position:absolute;z-index:6;ri
   .game-layout { gap: 10px; }
   .player-panel { position: static; padding: 14px; }
   .player-id { gap: 10px; padding-bottom: 12px; }
-  .avatar { width: 78px; height: 84px; font-size: 21px; }
+  .avatar { width: 116px; height: 124px; font-size: 21px; }
   .player-id h2 { font-size: 18px; }
   .overall-row { padding: 10px 2px 3px; }
   .overall-row strong { width: 34px; height: 34px; font-size: 18px; }
