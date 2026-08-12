@@ -15,11 +15,14 @@ const statLabels = { power: "球威", contact: "控球", speed: "球速", fieldi
 const chapters = [
   { name: "菜鳥的夏天", place: "國中一年級 · 青葉中學", age: 13 },
   { name: "甲子園之路", place: "高中二年級 · 海風高中", age: 17 },
-  { name: "選秀之夜", place: "大學／選秀 · 職業二軍", age: 20 },
-  { name: "王牌的代價", place: "職業生涯 · 一軍", age: 25 },
-  { name: "最後一局", place: "職業生涯 · 暮年", age: 34 }
+  { name: "大學與國家隊", place: "大學棒球 · 國際賽舞台", age: 20 },
+  { name: "命運的合約", place: "職業抉擇 · 球探與選秀", age: 22 },
+  { name: "漫長的養成", place: "職業發展聯盟", age: 24 },
+  { name: "最高舞台", place: "職業一軍", age: 27 },
+  { name: "王牌的代價", place: "職業巔峰 · 傷病考驗", age: 30 },
+  { name: "再一次上丘", place: "復出之路 · 生涯暮年", age: 36 }
 ];
-const chapterBackgrounds=["assets/baseball-campus.png","assets/chapter-2-night-stadium.webp","assets/chapter-3-scout-field.webp","assets/chapter-4-pro-stadium.webp","assets/chapter-5-sunset-field.webp"];
+const chapterBackgrounds=["assets/baseball-campus.png","assets/chapter-2-night-stadium.webp","assets/chapter-3-scout-field.webp","assets/chapter-3-scout-field.webp","assets/baseball-campus.png","assets/chapter-4-pro-stadium.webp","assets/chapter-4-pro-stadium.webp","assets/chapter-5-sunset-field.webp"];
 
 const legacyEvents = [
   { icon:"🧢", tag:"春季 · 社團教室", title:"最後一個名額", text:"校隊只剩一個名額。教練把球放在桌上，說他不看過去，只看你接下來的選擇。", min:0, choices:[
@@ -104,8 +107,41 @@ const events = [
   {icon:"🩺",tag:"第五章 · 復健室",title:"肩膀不再年輕",text:"醫生說你仍能投，但不可能再回到最快的自己。窗外傳來新人牛棚的球聲。",choices:[["重新打造控球型投法",{contact:7,fielding:4,speed:-3},"你失去速度，卻學會讓每一球更有意義。"],["接受手術拚一次復出",{health:6,spirit:5,fame:3},"漫長復健後，你再次握住比賽用球。",.55],["開始指導年輕投手",{spirit:7,fame:4},"你在別人的進步裡，看見另一種延續。"]]},
   {icon:"👦",tag:"第五章 · 青少年球場",title:"十八號的小球迷",text:"一個孩子拿著你的舊背號，問怎樣才能不怕投壞球。",choices:[["告訴他失敗是投手的一部分",{spirit:6,fans:5000},"他點點頭，把下一球投進捕手手套。"],["親自教他投第一顆曲球",{fielding:4,fame:4,fans:3000},"球歪得很遠，你們卻一起笑了。"],["送他陪伴多年的舊手套",{spirit:5,fame:3},"有些故事，會從一只手套重新開始。"]]},
   {icon:"🌅",tag:"第五章 · 引退前夕",title:"最後一次先發",text:"球團讓你選擇對手。你選了阿拓所在的球隊——他已成為對面的打擊教練。",choices:[["用直球和青春告別",{speed:4,power:5,fame:7,health:-4},"最後一球不再最快，卻是你投過最坦然的一球。"],["投出高中決賽的指叉球",{fielding:5,spirit:6,fame:7},"阿拓在對面笑了。他知道這顆球等了很多年。"],["把先發機會讓給新人",{spirit:8,fame:5},"你在第一局後交棒，新的十八號接過了球。"]]},
-  {icon:"🎤",tag:"第五章 · 滿場掌聲",title:"你留下了什麼？",text:"引退儀式上，主持人把麥克風交給你。球場安靜下來，等著你的最後一句話。",choices:[["謝謝每一個接過我球的人",{spirit:6,fame:6,fans:10000},"掌聲中，你最先看向那只熟悉的捕手手套。"],["棒球教會我，下一球永遠能重來",{spirit:8,fame:7},"這句話多年後仍寫在球場入口。"],["我還沒有離開，只是換個位置",{fielding:5,fame:5},"隔年春天，你以投手教練的身分回到球場。"]]}
+  {icon:"🎤",tag:"第五章 · 滿場掌聲",title:"你留下了什麼？",text:"引退儀式上，主持人把麥克風交給你。球場安靜下來，等著你的最後一句話。",choices:[["謝謝每一個接過我球的人",{spirit:6,fame:6,fans:10000},"掌聲中，你最先看向那只熟悉的捕手手套。"],["棒球教會我，下一球永遠能重來",{spirit:8,fame:7},"這句話多年後仍寫在球場入口。"],["我還沒有離開，只是換個位置",{fielding:5,fame:5},"隔年春天，你以投手教練的身分回到球場。"]]},
+
+  {icon:"🎓",tag:"第三章 · 大學球場",title:"重新打造投手身體",text:"進入大學後，木棒打者不再輕易被球速壓制。教練要你決定未來兩年的方向。",choices:[["強化下肢與核心",{power:5,health:5},"你開始擁有能撐過整季的身體。"],["鑽研指叉球與滑球",{fielding:7,contact:2,pitch:"指叉球"},"新的決勝球讓球探第一次把名字畫上紅圈。"],["追求突破一百五十公里",{speed:8,power:4,health:-5},"測速槍亮起驚人的數字，肩膀也承受更大負荷。",.58]]},
+  {icon:"🌏",tag:"第三章 · 國際邀請賽",title:"第一次披上國家隊球衣",text:"滿場觀眾注視著胸前的隊名。你在重要國際賽被安排長中繼，必須守住一分領先。",choices:[["用伸卡球製造滾地球",{contact:5,fielding:5,fame:5,pitch:"伸卡球"},"連續三個滾地球，你讓世界注意到這顆沉重的球。"],["全力搶三振",{speed:5,power:5,fame:6,health:-4},"最快球速刷新，國外球探開始追蹤你。",.6],["相信捕手完整配球",{spirit:6,contact:4,fame:4},"你證明自己能在陌生舞台保持冷靜。"]]},
+  {icon:"📓",tag:"第三章 · 梅花旗",title:"九局與十三次三振",text:"強敵把比賽拖進最後一局。你的用球數已經偏高，觀眾卻全站了起來。",choices:[["挑戰完投",{spirit:7,fame:7,health:-6},"最後一球揮空，你用完整九局寫下代表作。",.6],["交棒給牛棚",{health:5,spirit:3,fame:2},"你學會生涯不是只由一場完投組成。"],["改用省力的伸卡球",{contact:6,fielding:4,pitch:"伸卡球"},"打者不斷擊出無力滾地球，你保存體力完成比賽。"]]},
+  {icon:"🔭",tag:"第三章 · 球探看台",title:"世界都來看你投球",text:"美國、日本與台灣職棒球探同時出現在看台。每個人開出的道路都不一樣。",choices:[["展示最成熟的完整配球",{contact:6,fielding:5,fame:5},"三地球團都留下正式評估。"],["展示最高天花板",{speed:7,power:5,fame:7,health:-4},"你讓最遠方的球探願意冒險。",.56],["先問清楚培養計畫",{spirit:6,health:3},"你不只想被簽下，更想知道如何走到最高層級。"]]},
+
+  {icon:"✈️",tag:"第四章 · 合約桌前",title:"三條職業道路",text:"美職球團提供從新人聯盟出發的旅外合約；日職承諾細緻養成；中職則給你立即競爭一軍的機會。這次選擇會改變往後的生涯。",choices:[["挑戰美國職棒",{careerPath:"mlb",money:650,fame:5,spirit:4},"你收拾行李，從語言不通的新人聯盟開始。"],["投入日本職棒",{careerPath:"npb",money:520,contact:4,fielding:4},"你進入嚴謹的二軍體系，重新學習每個動作。"],["參加中華職棒選秀",{careerPath:"cpbl",money:420,fame:6,fans:3500},"選秀會喊出你的名字，家鄉球迷立刻有了期待。"]]},
+  {icon:"🖊️",tag:"第四章 · 簽約交涉",title:"合約不只有簽約金",text:"經紀人提醒你：更高的錢、升級條款與出賽機會，不可能全部拿到。",choices:[["爭取最高簽約金",{money:700,spirit:-2},"數字很漂亮，但球團不再保證快速升級。"],["加入升級與一軍條款",{fame:3,spirit:4},"你把未來的機會寫進合約。"],["保留旅費與進修保障",{health:3,contact:3,money:180},"這份合約替漫長養成留了退路。"]]},
+  {icon:"🗣️",tag:"第四章 · 離家前夜",title:"家人的餐桌",text:"機票和合約放在桌上。家人沒有勸你留下，只問你準備好失敗多久。",choices:[["我會走到最高層級",{spirit:7,fame:3},"這句承諾成為你在低潮時留下的理由。"],["設下三年檢查點",{contact:3,health:4},"夢想不再只是衝動，而是一個能調整的計畫。"],["帶著家鄉的舊手套出發",{spirit:5,fans:1200},"那只手套提醒你從哪裡開始。"]]},
+  {icon:"🧳",tag:"第四章 · 報到日",title:"陌生休息室",text:"隊友、語言和食物都陌生，只有投手丘的距離沒有改變。",choices:[["主動向捕手學習暗號",{contact:5,spirit:3},"你比預期更快進入比賽節奏。"],["先用球威取得尊重",{power:6,speed:3,health:-3},"第一場牛棚練投讓所有人轉頭。",.62],["每天多學十個棒球用語",{spirit:4,fame:2},"你開始真正成為球隊的一員。"]]},
+
+  {icon:"🚌",tag:"第五章 · 發展聯盟",title:"沒有掌聲的第六年",text:"長途巴士、廉價旅館與反覆升降。真正困難的不是輸球，而是不知道通知何時會來。",choices:[["建立完整投球日誌",{contact:6,fielding:4},"每天的小數據慢慢拼出升級道路。"],["向老投手學習保養",{health:7,spirit:3},"你開始明白能一直投，本身就是武器。"],["打電話告訴家人想放棄",{spirit:7,health:3},"說出口後，你反而知道自己還想再試一次。"]]},
+  {icon:"🩺",tag:"第五章 · 傷兵名單",title:"肩關節的裂痕",text:"檢查顯示傷勢比預期嚴重。手術可能讓你整季報銷，也可能讓生涯重新開始。",choices:[["接受手術完整復健",{health:10,spirit:5,speed:-4},"一年沒有正式比賽，但你重新學會健康地投球。",.68],["保守治療繼續競爭",{fame:3,health:-9,power:-3},"你留在名單上，疼痛卻沒有離開。",.48],["暫停投球重練動作",{contact:6,fielding:5,health:5},"慢下來之後，你發現過去忽略的發力方式。"]]},
+  {icon:"⚙️",tag:"第五章 · 投手實驗室",title:"一顆會下沉的球",text:"教練要你放棄追求純粹球速，改練能讓打者把球打進地面的新武器。",choices:[["全心開發伸卡球",{fielding:8,contact:5,pitch:"高速伸卡球"},"沉重而晚下墜的球，成為改變生涯的招牌。",.65],["保留四縫線搭配滑球",{speed:4,fielding:5,pitch:"滑球"},"你用速差和橫向位移創造新的壓制。"],["強化控球與滾地球配球",{contact:8,spirit:4},"你不再追逐每一次三振，而是追求最有效率的出局。"]]},
+  {icon:"📱",tag:"第五章 · 凌晨電話",title:"上層球隊需要一名投手",text:"電話終於響起。教練只說：明天報到，你可能先發，也可能從牛棚等待。",choices:[["我隨時可以先發",{power:4,spirit:6,fame:5},"多年等待濃縮成一句回答。"],["接受任何投手角色",{contact:4,health:4,fame:3},"你把登上最高層級放在個人定位之前。"],["先確認身體狀態",{health:6,spirit:3},"你沒有讓期待蓋過身體發出的聲音。"]]},
+
+  {icon:"🌃",tag:"第六章 · 一軍初登板",title:"最高舞台的第一球",text:"數萬人的呼吸壓向投手丘。從學生球場到今天，你等了比想像中更久。",choices:[["用招牌伸卡球搶好球",{contact:5,fielding:6,fame:7},"第一顆滾地球出局，世界終於安靜下來。"],["用最快直球正面迎戰",{speed:6,power:5,fame:8,health:-4},"測速槍與歡呼同時亮起。",.58],["讓捕手決定第一輪配球",{spirit:5,contact:5},"你把緊張拆成一顆又一顆能執行的球。"]]},
+  {icon:"⚾",tag:"第六章 · 生涯首勝",title:"最後一個出局數",text:"你帶著領先投到第七局。壘上有人，總教練走上投手丘，問你還能不能解決下一位打者。",choices:[["把球留給我",{spirit:7,fame:8,health:-4},"滾地球雙殺，你拿下最高層級的第一勝。",.64],["相信牛棚完成比賽",{health:5,spirit:3,fame:5},"你在休息室看著終結者守住勝利。"],["改投高風險三振球",{fielding:6,fame:7,health:-3},"球棒從指叉球上方掠過，全場起立。",.57]]},
+  {icon:"🧠",tag:"第六章 · 球探報告",title:"聯盟開始破解你",text:"打者不再追打低球。你必須在對手完成調整前，再次改變自己。",choices:[["增加反方向滑球",{fielding:7,pitch:"反向滑球"},"打者的視線再次被拉開。"],["把伸卡球投得更靠近手邊",{power:5,contact:4},"斷棒聲成為新的招牌。",.62],["用數據重新設計配球",{contact:7,spirit:4},"你開始用每位打者不同的弱點取勝。"]]},
+  {icon:"🏟️",tag:"第六章 · 季後賽",title:"城市把希望交給你",text:"系列賽第一戰，你被交付先發。這一次，故鄉也在清晨守著轉播。",choices:[["沉著製造滾地球",{contact:6,fielding:5,fame:9,fans:10000},"七局只失一分，你拿下重要勝投。"],["追求完封",{power:7,spirit:6,fame:11,health:-7},"最後一局全場起立，你完成生涯代表作。",.52],["依照用球數交棒",{health:5,fame:6,spirit:4},"你的球隊走得比個人紀錄更遠。"]]},
+
+  {icon:"👑",tag:"第七章 · 王牌球季",title:"二十勝之前",text:"你站在聯盟勝投榜最前方。每一次先發都牽動兩座城市，但身體開始恢復得更慢。",choices:[["挑戰年度勝投王",{fame:12,fans:18000,spirit:7,health:-8},"十九勝讓你的名字進入歷史討論。",.58],["控制局數保持健康",{health:8,contact:4,fame:6},"你放棄一點耀眼，換取更長的生涯。"],["把重點放在季後賽",{spirit:7,fielding:4,fame:7},"你把最好的球留給最重要的十月。"]]},
+  {icon:"📰",tag:"第七章 · 全城焦點",title:"沉默的王牌",text:"媒體每天等待你的話。代言與訪問湧入，下一場先發卻不會因此變簡單。",choices:[["維持低調只談比賽",{spirit:6,contact:4,fame:5},"安靜成為你的標誌。"],["接受國際品牌代言",{money:1600,fame:8,spirit:-2},"你的臉出現在兩座城市的街頭。"],["把曝光留給台灣棒球",{fans:15000,fame:9,spirit:5},"更多孩子開始在清晨看棒球。"]]},
+  {icon:"💥",tag:"第七章 · 客場跑壘",title:"意外的一步",text:"一次不熟悉的跑壘讓腳踝劇烈扭轉。球隊醫師衝上場，你知道這不是普通疼痛。",choices:[["立即停止比賽接受檢查",{health:3,spirit:3,fame:-1},"你錯過剩餘球季，卻避免傷勢擴大。"],["嘗試繼續比賽",{fame:6,health:-14,speed:-5},"你完成這一局，生涯卻從此轉向。",.42],["接受完整復健並調整投法",{health:8,contact:5,speed:-4},"復健漫長，但你開始準備另一種回歸。"]]},
+  {icon:"📄",tag:"第七章 · 合約冬天",title:"球隊沒有保留你",text:"曾經把你視為王牌的球隊選擇向前走。桌上只剩小聯盟約、測試會與回家的機票。",choices:[["接受小聯盟合約重新證明",{spirit:8,health:3,fame:-3},"你再次搭上巴士，這次沒有人保證終點。"],["轉戰另一個職業聯盟",{careerPath:"return",fame:4,fans:5000,health:4},"換一個國家，投手丘仍是同樣距離。"],["先回家完整休養",{health:10,spirit:5},"離開聚光燈後，你重新確認自己仍想投球。"]]},
+
+  {icon:"🌱",tag:"第八章 · 無名球場",title:"從零開始的測試會",text:"沒有保證合約，只有幾十名同樣不願放棄的投手。測速槍再次架起來。",choices:[["展示健康與穩定",{contact:6,health:5,spirit:4},"你沒有投出最快球，卻讓球探看到能用的投手。"],["催出最後的極速",{speed:7,power:5,health:-7,fame:3},"那一球讓所有人抬頭。",.48],["展示全新的伸卡球",{fielding:7,contact:5,pitch:"復活伸卡球"},"球在本壘前沉下，你得到一份邀請。",.62]]},
+  {icon:"🔥",tag:"第八章 · 牛棚重生",title:"從先發改到牛棚",text:"教練說你不必再投七局，只要用最好的球解決眼前打者。",choices:[["接受中繼角色",{power:5,health:5,spirit:4},"縮短任務讓球威重新出現。"],["挑戰終結者",{speed:5,spirit:7,fame:5},"第九局的壓力喚醒你的競爭心。",.56],["堅持爭取先發",{contact:5,health:-4,fame:3},"道路更窄，但你仍想用自己的方式回來。"]]},
+  {icon:"📞",tag:"第八章 · 再次來電",title:"最高舞台又需要你",text:"多年後，電話再次在深夜響起。這次你很清楚，機會不會永遠等待。",choices:[["立刻報到",{spirit:8,fame:7,fans:8000},"你再次走進那扇門，腳步比第一次更平靜。"],["確認角色與使用方式",{contact:4,health:5,spirit:4},"成熟讓你知道如何保護得來不易的機會。"],["把消息先告訴家人",{spirit:6,fans:5000},"電話兩端沉默了很久，然後一起笑了。"]]},
+  {icon:"🌅",tag:"第八章 · 最後一局",title:"你要如何離開投手丘？",text:"最後一場比賽結束後，球場沒有立刻關燈。你回頭看著走過的每一層級。",choices:[["再投一季，直到沒有人要我",{spirit:8,fame:5,health:-6},"你把每次登板都當成額外獲得的禮物。",.48],["回到故鄉成為投手教練",{fielding:7,fame:7,fans:10000},"你把傷病、失敗與復出的知識交給下一代。"],["在最高舞台正式引退",{fame:10,spirit:7,fans:15000},"掌聲穿過球場，也穿過你漫長的職業人生。"]]}
 ];
+const storyEvents=[...events.slice(0,8),...events.slice(20)];
+const pathNames={mlb:"美國職棒",npb:"日本職棒",cpbl:"中華職棒",return:"職業復出聯盟"};
+function currentLeague(){return pathNames[state.careerPath]||"職業棒球";}
 
 let state;
 let soundOn = true;
@@ -133,7 +169,7 @@ function startGame(customState) {
 }
 
 function showEvent() {
-  state.current=state.chapter*4+state.turn; const e=events[state.current];
+  state.current=state.chapter*4+state.turn; const e=storyEvents[state.current];
   $("#eventVisual").style.backgroundImage=`linear-gradient(180deg,rgba(4,46,105,.08),rgba(4,35,79,.22)),url('${chapterBackgrounds[state.chapter]}')`; $("#eventKicker").textContent=e.tag; $("#eventTitle").textContent=e.title; $("#eventText").textContent=e.text;
   $("#resultBox").classList.add("hidden"); $("#nextBtn").classList.add("hidden");
   $("#choices").innerHTML=e.choices.map((c,i)=>`<button class="choice" data-i="${i}"><span class="choice-letter">${String.fromCharCode(65+i)}</span><span>${c[0]}</span></button>`).join("");
@@ -143,9 +179,9 @@ function showEvent() {
 
 function choose(i) {
   const readingPosition = window.scrollY;
-  const c=events[state.current].choices[i], effects={...c[1]}, origin=birdRoster[state.origin]; let success=true;
-  const keyMoment=/滿壘|決賽|選秀|初登板|冠軍|最後|危機/.test(events[state.current].title+events[state.current].tag);
-  if(c[3]!==undefined) { const spiritBonus=(state.stats.spirit-35)/200, luckBonus=(origin.luck||0)+(origin.scout&&/球探|選秀/.test(events[state.current].title)?origin.scout:0); success=rng()<Math.min(.96,c[3]+spiritBonus+luckBonus); if(!success) Object.keys(effects).forEach(k=>{ effects[k]=k==="pitch"?null:Math.round(effects[k]*-.45); }); }
+  const c=storyEvents[state.current].choices[i], effects={...c[1]}, origin=birdRoster[state.origin]; let success=true;
+  const keyMoment=/滿壘|決賽|選秀|初登板|冠軍|最後|危機/.test(storyEvents[state.current].title+storyEvents[state.current].tag);
+  if(c[3]!==undefined) { const spiritBonus=(state.stats.spirit-35)/200, luckBonus=(origin.luck||0)+(origin.scout&&/球探|選秀/.test(storyEvents[state.current].title)?origin.scout:0); success=rng()<Math.min(.96,c[3]+spiritBonus+luckBonus); if(!success) Object.keys(effects).forEach(k=>{ effects[k]=k==="pitch"||k==="careerPath"?null:Math.round(effects[k]*-.45); }); }
   if(success) Object.keys(effects).forEach(k=>{ if(k in state.stats&&effects[k]>0) effects[k]=Math.round(effects[k]*(origin.training||1)*(origin.adversity&&state.chapter<3?origin.adversity:1)); });
   if(success&&origin.business) { if(effects.money>0) effects.money=Math.round(effects.money*origin.business); if(effects.fame<0) effects.fame=Math.ceil(effects.fame*.4); }
   if(effects.money<0&&origin.cost) effects.money=Math.round(effects.money*origin.cost);
@@ -153,12 +189,13 @@ function choose(i) {
   const parts=[];
   for(const [k,v] of Object.entries(effects)) {
     if(k==="pitch") { if(v&&!state.pitches.includes(v)) state.pitches.push(v); if(v) parts.push(`<span class="delta">習得球種：${v}</span>`); continue; }
+    if(k==="careerPath") { if(v){state.careerPath=v;parts.push(`<span class="delta">職業道路：${currentLeague()}</span>`);state.timeline.push(`加盟${currentLeague()}`);} continue; }
     if(k in state.stats) state.stats[k]=Math.max(0,Math.min(origin.cap||99,state.stats[k]+v)); else state[k]=Math.max(0,(state[k]||0)+v);
     parts.push(`<span class="delta ${v<0?'negative':''}">${statLabels[k]||({fame:'名聲',money:'資金',fans:'粉絲'}[k])} ${v>0?'+':''}${v}</span>`);
   }
   const setback=rollSetback("story");
   $("#choices").innerHTML=""; $("#resultBox").innerHTML=`<strong>${success?'結果':'事與願違'}</strong><br>${success?c[2]:"結果沒有如你預期，但失敗也成了往後的養分。"}<br>${parts.join("")}${setback?`<div class="setback"><b>⚠ 負面事件｜${setback.title}</b><br>${setback.text}</div>`:""}`; $("#resultBox").classList.remove("hidden"); $("#nextBtn").classList.remove("hidden");
-  if((effects.fame||0)>=6 || (effects.spirit||0)>=6) { const mark=events[state.current].title; if(!state.timeline.includes(mark)) state.timeline.push(mark); }
+  if((effects.fame||0)>=6 || (effects.spirit||0)>=6) { const mark=storyEvents[state.current].title; if(!state.timeline.includes(mark)) state.timeline.push(mark); }
   beep(success?520:220); render(); save();
   requestAnimationFrame(()=>window.scrollTo({top:readingPosition,behavior:"auto"}));
 }
@@ -262,19 +299,19 @@ function confirmSkills() {
 function advanceChapter() {
   const cap=birdRoster[state.origin].cap||99;
   state.chapter++; state.turn=0; state.phase="event"; state.match=null; state.lastMatchSetback=null; state.skillResolved=false; state.skillResultHtml=null; state.stats.health=Math.min(cap,state.stats.health+5);
-  $("#skillCard").classList.add("hidden"); $("#eventCard").classList.remove("hidden"); if(state.chapter>=5)return endGame(); render();showEvent();save();
+  $("#skillCard").classList.add("hidden"); $("#eventCard").classList.remove("hidden"); if(state.chapter>=chapters.length)return endGame(); render();showEvent();save();
 }
 
 function overallScore() { const s=state.stats; return Math.round((s.power+s.contact+s.speed+s.fielding+s.spirit+s.health)/6); }
 function grade(n) { return n>=82?'S':n>=70?'A':n>=57?'B':n>=44?'C':n>=32?'D':'E'; }
 
 function render() {
-  const ch=chapters[state.chapter], bird=birdRoster[state.bird]; $("#displayName").textContent=state.name; $("#playerPosition").textContent=`${state.position} · ${bird.label}`; $("#careerLine").textContent=`${ch.age} 歲 · ${ch.place} · ${bird.bonus}`; $("#avatar").innerHTML=`<img src="${bird.src}" alt="${bird.label}">`;
+  const ch=chapters[state.chapter], bird=birdRoster[state.bird], careerPlace=state.chapter>=4?`${currentLeague()} · ${ch.place}`:ch.place; $("#displayName").textContent=state.name; $("#playerPosition").textContent=`${state.position} · ${bird.label}`; $("#careerLine").textContent=`${ch.age} 歲 · ${careerPlace} · ${bird.bonus}`; $("#avatar").innerHTML=`<img src="${bird.src}" alt="${bird.label}">`;
   $("#overall").textContent=grade(overallScore());
   $("#stats").innerHTML=Object.entries(state.stats).map(([k,v])=>`<div class="stat"><div class="stat-head"><span>${statLabels[k]}</span><b>${v}</b></div><div class="stat-track"><i style="width:${Math.min(100,v)}%"></i></div></div>`).join("");
   $("#pitchList").innerHTML=[...(state.special||[]).map(x=>`<span class="pitch-chip origin-chip">★ ${x}</span>`),...state.pitches.map((p,i)=>`<span class="pitch-chip ${i===state.pitches.length-1&&state.pitches.length>1?'new':''}">${p}</span>`)].join(""); $("#pitchCount").textContent=`${state.pitches.length} / 8`;
   $("#fameValue").textContent=state.fame; $("#moneyValue").textContent=state.money+" 萬"; $("#fansValue").textContent=state.fans>=10000?(state.fans/10000).toFixed(1)+"萬":state.fans;
-  $("#chapterLabel").textContent=`第${['一','二','三','四','五'][state.chapter]}章`; $("#seasonLabel").textContent=ch.name; $("#weekLabel").textContent=state.turn>=4?"章末比賽":`第 ${state.turn+1} / 4 回合`; $("#progressBar").style.width=`${Math.min(100,(state.turn+1)/5*100)}%`;
+  $("#chapterLabel").textContent=`第${['一','二','三','四','五','六','七','八'][state.chapter]}章`; $("#seasonLabel").textContent=ch.name; $("#weekLabel").textContent=state.turn>=4?"章末比賽":`第 ${state.turn+1} / 4 回合`; $("#progressBar").style.width=`${Math.min(100,(state.turn+1)/5*100)}%`;
   $("#timelineItems").innerHTML=state.timeline.slice(-8).map(x=>`<span class="timeline-item">● ${x}</span>`).join(""); $("#achievementCount").textContent=`${Math.max(0,state.timeline.length-1)} 個里程碑`;
 }
 
