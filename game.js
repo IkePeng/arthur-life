@@ -240,7 +240,7 @@ function showSkills() {
 }
 function formatIP(outs){return `${Math.floor(outs/3)}.${outs%3}`;}
 function renderSkills() {
-  const used=Object.values(state.skillAllocation||{}).reduce((a,b)=>a+b,0), remaining=state.skillPoints-used; $("#skillPointsValue").textContent=remaining;
+  const used=Object.values(state.skillAllocation||{}).reduce((a,b)=>a+b,0), remaining=state.skillPoints-used, pointsEl=$("#skillPointsValue"); if(pointsEl)pointsEl.textContent=remaining;
   $("#skillAllocations").innerHTML=Object.keys(state.stats).map(k=>`<div><span>${statLabels[k]} <b>${state.stats[k]} → ${state.stats[k]+(state.skillAllocation[k]||0)}</b><small>單點成功率 ${Math.round(skillSuccessRate(k)*100)}%</small></span><button data-k="${k}" data-d="-1" ${state.skillResolved||!state.skillAllocation[k]?'disabled':''}>−</button><strong>${state.skillAllocation[k]||0}</strong><button data-k="${k}" data-d="1" ${state.skillResolved||remaining<=0?'disabled':''}>＋</button></div>`).join("");
   document.querySelectorAll("#skillAllocations button").forEach(b=>b.addEventListener("click",()=>{const k=b.dataset.k,d=+b.dataset.d;state.skillAllocation[k]=Math.max(0,(state.skillAllocation[k]||0)+d);renderSkills();}));
   $("#confirmSkillsBtn").disabled=!state.skillResolved&&remaining!==0; $("#confirmSkillsBtn").textContent=state.skillResolved?"進入下一章":"確認分配並進行強化";
@@ -254,7 +254,7 @@ function confirmSkills() {
   const remaining=state.skillPoints-Object.values(state.skillAllocation).reduce((a,b)=>a+b,0); if(remaining)return;
   const cap=birdRoster[state.origin].cap||99, results=[]; let totalSuccess=0,totalFail=0;
   Object.entries(state.skillAllocation).forEach(([k,v])=>{let success=0;for(let i=0;i<v;i++){if(rng()<skillSuccessRate(k)&&state.stats[k]+success<cap)success++;}const fail=v-success;state.stats[k]=Math.min(cap,state.stats[k]+success);totalSuccess+=success;totalFail+=fail;if(v)results.push(`${statLabels[k]}：成功 ${success}／失敗 ${fail}`);});
-  state.skillResolved=true; state.timeline.push(`技能強化：成功 ${totalSuccess} 點、失敗 ${totalFail} 點`);
+  state.skillResolved=true; state.skillAllocation={}; state.timeline.push(`技能強化：成功 ${totalSuccess} 點、失敗 ${totalFail} 點`);
   state.skillResultHtml=`<span class="training-result ${totalFail?'has-fail':''}"><b>${totalFail?'強化有成功也有失敗':'強化大成功！'}</b><small>已使用的技能點不論成敗都會消耗</small>${results.join("<br>")}<strong>總計成功 ${totalSuccess} 點｜失敗 ${totalFail} 點</strong></span>`;
   $("#skillSummary").innerHTML=state.skillResultHtml;
   renderSkills();render();save();beep(totalFail?360:650);
