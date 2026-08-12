@@ -19,6 +19,7 @@ const chapters = [
   { name: "王牌的代價", place: "職業生涯 · 一軍", age: 25 },
   { name: "最後一局", place: "職業生涯 · 暮年", age: 34 }
 ];
+const chapterBackgrounds=["assets/baseball-campus.png","assets/chapter-2-night-stadium.webp","assets/chapter-3-scout-field.webp","assets/chapter-4-pro-stadium.webp","assets/chapter-5-sunset-field.webp"];
 
 const legacyEvents = [
   { icon:"🧢", tag:"春季 · 社團教室", title:"最後一個名額", text:"校隊只剩一個名額。教練把球放在桌上，說他不看過去，只看你接下來的選擇。", min:0, choices:[
@@ -133,7 +134,7 @@ function startGame(customState) {
 
 function showEvent() {
   state.current=state.chapter*4+state.turn; const e=events[state.current];
-  $("#eventIcon").textContent=e.icon; $("#eventKicker").textContent=e.tag; $("#eventTitle").textContent=e.title; $("#eventText").textContent=e.text;
+  $("#eventVisual").style.backgroundImage=`linear-gradient(180deg,rgba(4,46,105,.08),rgba(4,35,79,.22)),url('${chapterBackgrounds[state.chapter]}')`; $("#eventKicker").textContent=e.tag; $("#eventTitle").textContent=e.title; $("#eventText").textContent=e.text;
   $("#resultBox").classList.add("hidden"); $("#nextBtn").classList.add("hidden");
   $("#choices").innerHTML=e.choices.map((c,i)=>`<button class="choice" data-i="${i}"><span class="choice-letter">${String.fromCharCode(65+i)}</span><span>${c[0]}</span></button>`).join("");
   document.querySelectorAll(".choice").forEach(btn=>btn.addEventListener("click",()=>choose(+btn.dataset.i)));
