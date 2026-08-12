@@ -1,23 +1,23 @@
 const $ = (s) => document.querySelector(s);
 
 const birdRoster = {
-  "18": { src:"assets/bird-pitcher.webp?v=4", label:"資本雄厚", bonus:"資金充裕 · 頂級設備 · 訓練開銷減免", money:1800, stats:{contact:4,health:4}, training:1.12, cost:0.5 },
-  "21": { src:"assets/bird-lefty-21.webp?v=4", label:"一招入魂", bonus:"指定武器接近滿級 · 其他基礎能力較低", stats:{speed:55,power:8,contact:-6,fielding:-5,health:-4}, pitch:"160km 火球", special:"火球入魂" },
-  "36": { src:"assets/bird-sidearm-36.webp?v=4", label:"天賦異稟", bonus:"能力上限提高 · 訓練成長加成 · 覺醒爆發", stats:{power:7,contact:7,speed:7,fielding:7,health:5}, training:1.35, cap:110, special:"天賦覺醒" },
-  "99": { src:"assets/bird-closer-99.webp?v=4", label:"名門之後", bonus:"高人氣與聲望 · 傳奇導師 · 球探青睞", fame:18, fans:3800, stats:{spirit:6,contact:4}, scout:.16, special:"傳奇人脈" },
-  "55": { src:"assets/bird-power-55.webp?v=4", label:"草莽野草", bonus:"逆境爆發 · 體力極佳 · 在地死忠球迷", fans:900, stats:{health:18,spirit:12,power:4}, adversity:1.35, special:"野草韌性" },
-  "77": { src:"assets/bird-calm-77.webp?v=4", label:"強運之子", bonus:"關鍵時刻強化 · 正面偶遇機率提高", stats:{spirit:8}, luck:.14, special:"命運眷顧" },
-  "88": { src:"assets/bird-heavy-88.webp?v=2", label:"世故玩家", bonus:"合約加成 · 商業贊助 · 公關維持人氣", money:300, fame:7, fans:1200, stats:{contact:5,spirit:5}, business:1.55, special:"談判高手" }
+  "18": { src:"assets/bird-pitcher.webp?v=5", label:"資本雄厚", bonus:"資金充裕 · 頂級設備 · 訓練開銷減免", money:1800, stats:{contact:4,health:4}, training:1.12, cost:0.5 },
+  "21": { src:"assets/bird-lefty-21.webp?v=5", label:"一招入魂", bonus:"指定武器接近滿級 · 其他基礎能力較低", stats:{speed:55,power:8,contact:-6,fielding:-5,health:-4}, pitch:"160km 火球", special:"火球入魂" },
+  "36": { src:"assets/bird-sidearm-36.webp?v=5", label:"天賦異稟", bonus:"能力上限提高 · 訓練成長加成 · 覺醒爆發", stats:{power:7,contact:7,speed:7,fielding:7,health:5}, training:1.35, cap:110, special:"天賦覺醒" },
+  "99": { src:"assets/bird-closer-99.webp?v=5", label:"名門之後", bonus:"高人氣與聲望 · 傳奇導師 · 球探青睞", fame:18, fans:3800, stats:{spirit:6,contact:4}, scout:.16, special:"傳奇人脈" },
+  "55": { src:"assets/bird-power-55.webp?v=5", label:"草莽野草", bonus:"逆境爆發 · 體力極佳 · 在地死忠球迷", fans:900, stats:{health:18,spirit:12,power:4}, adversity:1.35, special:"野草韌性" },
+  "77": { src:"assets/bird-calm-77.webp?v=5", label:"強運之子", bonus:"關鍵時刻強化 · 正面偶遇機率提高", stats:{spirit:8}, luck:.14, special:"命運眷顧" },
+  "88": { src:"assets/bird-heavy-88.webp?v=5", label:"世故玩家", bonus:"合約加成 · 商業贊助 · 公關維持人氣", money:300, fame:7, fans:1200, stats:{contact:5,spirit:5}, business:1.55, special:"談判高手" }
 };
-let selectedBird = "18";
+let selectedBird = null;
 
 const statLabels = { power: "球威", contact: "控球", speed: "球速", fielding: "變化球", spirit: "心志", health: "健康" };
 const chapters = [
-  { name: "菜鳥的夏天", place: "青葉中學", age: 15 },
-  { name: "甲子園之路", place: "海風高中", age: 17 },
-  { name: "選秀之夜", place: "職業二軍", age: 20 },
-  { name: "王牌的代價", place: "職業一軍", age: 25 },
-  { name: "最後一局", place: "生涯暮年", age: 34 }
+  { name: "菜鳥的夏天", place: "國中一年級 · 青葉中學", age: 13 },
+  { name: "甲子園之路", place: "高中二年級 · 海風高中", age: 17 },
+  { name: "選秀之夜", place: "大學／選秀 · 職業二軍", age: 20 },
+  { name: "王牌的代價", place: "職業生涯 · 一軍", age: 25 },
+  { name: "最後一局", place: "職業生涯 · 暮年", age: 34 }
 ];
 
 const legacyEvents = [
@@ -116,6 +116,7 @@ function beep(freq=420) {
 }
 
 function newState() {
+  if(!selectedBird) selectedBird=randomOrigin();
   const origin=birdRoster[selectedBird], stats={power:30,contact:28,speed:32,fielding:24,spirit:35,health:72};
   Object.entries(origin.stats||{}).forEach(([k,v])=>stats[k]+=v);
   return { name:$("#playerName").value.trim()||"無名小將", position:"投手", bird:selectedBird, origin:selectedBird, chapter:0, turn:0, used:[], pitches:["四縫線直球",...(origin.pitch?[origin.pitch]:[])], special:origin.special?[origin.special]:[], stats, fame:origin.fame||0, money:origin.money||0, fans:origin.fans||12, timeline:[`出生背景：${origin.label}`,"加入校隊"] };
@@ -196,24 +197,20 @@ function endGame() {
 function save() { localStorage.setItem("baseballLifeSave",JSON.stringify(state)); }
 function resetToStart() { localStorage.removeItem("baseballLifeSave"); state=null; $("#gameScreen").classList.add("hidden"); $("#endingScreen").classList.add("hidden"); $("#startScreen").classList.remove("hidden"); window.scrollTo({top:0,behavior:"smooth"}); }
 
-function updateOriginPreview() { const origin=birdRoster[selectedBird]; $("#originName").textContent=origin.label; $("#originBonus").textContent=origin.bonus; }
-document.querySelectorAll(".bird-option").forEach(btn=>btn.addEventListener("click",()=>{
-  selectedBird=btn.dataset.bird;
-  document.querySelectorAll(".bird-option").forEach(option=>{ const active=option===btn; option.classList.toggle("active",active); option.setAttribute("aria-pressed",String(active)); });
+function randomOrigin() { const ids=Object.keys(birdRoster); return ids[Math.floor(Math.random()*ids.length)]; }
+function revealRandomOrigin() {
+  selectedBird=randomOrigin(); const origin=birdRoster[selectedBird];
+  $("#originName").textContent=origin.label; $("#originBonus").textContent=origin.bonus;
+  $("#randomBirdCard img").src=origin.src; $("#randomBirdCard b").textContent=origin.label;
   $(".hero-player img").src=birdRoster[selectedBird].src;
-  updateOriginPreview();
-  beep(460);
-}));
+}
 $("#startBtn").addEventListener("click",()=>startGame());
 $("#nextBtn").addEventListener("click",nextTurn);
 $("#restartBtn").addEventListener("click",()=>{ if(confirm("確定要放棄目前生涯，重新開始嗎？")) resetToStart(); });
 $("#newLifeBtn").addEventListener("click",resetToStart);
 $("#continueBtn").addEventListener("click",()=>{ try{startGame(JSON.parse(localStorage.getItem("baseballLifeSave")));}catch{resetToStart();} });
 $("#soundBtn").addEventListener("click",e=>{soundOn=!soundOn;e.currentTarget.classList.toggle("off",!soundOn);beep();});
-$("#storyBtn").addEventListener("click",()=>$("#storyDialog").showModal());
-$("#closeStory").addEventListener("click",()=>$("#storyDialog").close());
-$("#storyStart").addEventListener("click",()=>{$("#storyDialog").close();startGame();});
 $("#shareBtn").addEventListener("click",async()=>{ const text=`⚾ 逸群的野球｜${state.name}\n${state.position} · ${birdRoster[state.origin].label}\n生涯評價 ${grade(overallScore())}\n名聲 ${state.fame}｜球迷 ${state.fans}`; try{await navigator.clipboard.writeText(text);$("#copyHint").textContent="生涯卡已複製！";}catch{$("#copyHint").textContent=text;} });
 
-updateOriginPreview();
+revealRandomOrigin();
 if(localStorage.getItem("baseballLifeSave")) $("#continueBtn").classList.remove("hidden");
