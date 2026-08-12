@@ -268,19 +268,17 @@ body::after {
   background:linear-gradient(90deg,rgba(3,44,102,.9) 0%,rgba(5,59,128,.65) 43%,rgba(6,47,101,.18) 72%),url("assets/baseball-campus.png") center/cover;
 }
 .start-card::before,.start-card::after{display:none}
-.start-hud { height:54px; display:flex; align-items:center; gap:10px; padding:0 20px; color:#fff; background:linear-gradient(#0a5bb9,#063f8c); border-bottom:3px solid white; box-shadow:0 3px 0 #082c67; font-size:12px;font-weight:900; }
-.start-hud span{padding:6px 12px;background:rgba(0,24,74,.45);border:1px solid rgba(255,255,255,.45);border-radius:9px}.start-hud b{color:#ffe05b;font-size:18px}.start-hud .condition{margin-left:auto;color:#fff;background:linear-gradient(#ff8b4a,#e74220)}
-.hero-copy { position:absolute; z-index:3; top:95px; left:clamp(25px,5vw,62px); max-width:540px; color:white; text-shadow:0 3px 0 rgba(0,32,80,.65); }
+.hero-copy { position:absolute; z-index:3; top:41px; left:clamp(25px,5vw,62px); max-width:540px; color:white; text-shadow:0 3px 0 rgba(0,32,80,.65); }
 .hero-copy .tag{margin-bottom:14px;text-shadow:none}.hero-copy h2{font-family:"Noto Sans TC";color:#fff;font-size:clamp(42px,6vw,68px);font-style:italic;line-height:1.08;text-shadow:0 5px 0 #06418e,0 9px 20px rgba(0,22,66,.45)}
 .hero-copy>p:last-child{max-width:470px;margin:19px 0;color:#fff;font-size:14px;font-weight:700;line-height:1.75;text-shadow:0 2px 5px #07376f}
-.hero-player{position:absolute;right:8%;top:103px;width:210px;height:290px;z-index:2;filter:drop-shadow(0 15px 8px rgba(0,25,65,.34))}
+.hero-player{position:absolute;right:8%;top:49px;width:210px;height:290px;z-index:2;filter:drop-shadow(0 15px 8px rgba(0,25,65,.34))}
 .player-face{position:absolute;left:22px;top:54px;width:166px;height:142px;border-radius:48% 48% 44% 44%;background:#ffd3a8;border:7px solid #21335d;overflow:hidden}
 .player-face i{position:absolute;top:52px;width:22px;height:38px;border-radius:50%;background:#fff;border:5px solid #21335d}.player-face i:first-child{left:35px}.player-face i:nth-child(2){right:35px}.player-face i::after{content:"";display:block;width:7px;height:14px;margin:9px 0 0 5px;border-radius:9px;background:#244e99}.player-face b{position:absolute;width:28px;height:9px;left:62px;bottom:22px;border-bottom:5px solid #be6047;border-radius:50%}
 .player-cap{position:absolute;left:7px;top:2px;width:192px;height:99px;border-radius:90px 90px 22px 22px;background:linear-gradient(90deg,#fff 0 51%,#1d6fd1 51%);border:7px solid #21335d;z-index:2}.player-cap::after{content:"";position:absolute;right:-34px;bottom:-11px;width:100px;height:27px;border-radius:50%;background:#ff622d;border:6px solid #21335d}.player-cap i{position:absolute;left:77px;top:24px;color:#ff582c;font:900 28px sans-serif;z-index:2}
 .player-body{position:absolute;left:44px;top:185px;width:125px;height:105px;padding-top:31px;text-align:center;border-radius:28px 28px 10px 10px;background:linear-gradient(90deg,#fff 0 68%,#1b70cf 68%);border:7px solid #21335d;color:#f0522d;font-size:35px;font-weight:900}
 .setup-grid{position:absolute;z-index:5;left:32px;right:32px;bottom:94px;width:auto;padding:16px 18px;grid-template-columns:1.2fr 1fr 1.2fr;background:linear-gradient(#fafdff,#d9efff);border:3px solid white;outline:3px solid #08478e;border-radius:18px;box-shadow:0 7px 0 rgba(4,43,94,.65)}
 label>span{color:#214c80}.start-card>.primary-btn{position:absolute;z-index:6;right:50px;bottom:16px;margin:0;min-height:58px}.fine-print{display:none}.text-btn{position:absolute;bottom:33px;left:50px;color:white;font-weight:900;text-shadow:0 2px #073a7d}
-.mode-dock{display:flex;position:absolute;z-index:4;right:32px;top:362px;gap:9px}.mode-dock span{width:66px;height:64px;display:grid;place-items:center;padding-top:6px;color:white;font-size:22px;background:linear-gradient(#309eea,#0757b3);border:3px solid white;outline:2px solid #063a7c;border-radius:50%;box-shadow:0 5px 0 #06367b}.mode-dock b{font-size:10px}
+.mode-dock{display:flex;position:absolute;z-index:4;right:32px;top:308px;gap:9px}.mode-dock span{width:66px;height:64px;display:grid;place-items:center;padding-top:6px;color:white;font-size:22px;background:linear-gradient(#309eea,#0757b3);border:3px solid white;outline:2px solid #063a7c;border-radius:50%;box-shadow:0 5px 0 #06367b}.mode-dock b{font-size:10px}
 .story-btn{position:absolute;z-index:6;left:50px;bottom:25px;padding:10px 17px;color:#fff;border:2px solid rgba(255,255,255,.8);border-radius:99px;background:rgba(5,57,127,.86);font-size:12px;font-weight:900;box-shadow:0 3px 0 #042f70}
 .story-btn:hover{background:#0a69ce}
 .story-dialog{width:min(650px,calc(100% - 28px));padding:30px;border:4px solid white;outline:4px solid #07498f;border-radius:25px;color:#10264d;background:linear-gradient(#fafdff,#d7edff);box-shadow:0 24px 80px rgba(0,25,70,.5)}
@@ -290,7 +288,7 @@ label>span{color:#214c80}.start-card>.primary-btn{position:absolute;z-index:6;ri
 .game-layout{grid-template-columns:285px 1fr}.player-panel{background:linear-gradient(#f9fdff,#d8edff)}
 .event-visual{min-height:260px;background:linear-gradient(rgba(5,62,132,.12),rgba(5,44,104,.3)),url("assets/baseball-campus.png") center 60%/cover}.event-icon{font-size:78px;padding:14px 22px;border-radius:50%;background:rgba(255,255,255,.88);border:5px solid white;outline:3px solid #0756ad;box-shadow:0 7px 0 rgba(3,43,97,.6)}
 .event-content{background:linear-gradient(#fff,#e3f4ff)}.season-bar{border-radius:14px}.choice{min-height:70px}.timeline{background:linear-gradient(#fafdff,#d8edff)}
-@media(max-width:720px){.start-card{min-height:760px;background-position:58% center}.hero-copy{top:82px;left:22px;right:22px}.hero-copy h2{font-size:40px}.hero-copy>p:last-child{max-width:76%}.hero-player{right:-28px;top:205px;transform:scale(.72)}.mode-dock{top:390px;left:18px;right:auto}.mode-dock span{width:58px;height:56px}.setup-grid{left:14px;right:14px;bottom:95px;grid-template-columns:1fr;padding:13px;gap:7px}.setup-grid label>span{margin-bottom:3px}.setup-grid input,.setup-grid select{height:44px}.start-card>.primary-btn{right:18px;bottom:18px}.story-btn{left:18px;bottom:29px;padding:8px 10px}.text-btn{display:none}.start-hud{padding:0 9px;gap:5px}.start-hud span{padding:5px 7px}.start-hud .condition{display:none}.game-layout{grid-template-columns:1fr}.event-visual{min-height:200px}.story-dialog{padding:24px 17px}.story-route div{grid-template-columns:38px 100px 1fr;padding:9px}.story-route small{font-size:10px}}
+@media(max-width:720px){.start-card{min-height:760px;background-position:58% center}.hero-copy{top:28px;left:22px;right:22px}.hero-copy h2{font-size:40px}.hero-copy>p:last-child{max-width:76%}.hero-player{right:-28px;top:151px;transform:scale(.72)}.mode-dock{top:336px;left:18px;right:auto}.mode-dock span{width:58px;height:56px}.setup-grid{left:14px;right:14px;bottom:95px;grid-template-columns:1fr;padding:13px;gap:7px}.setup-grid label>span{margin-bottom:3px}.setup-grid input,.setup-grid select{height:44px}.start-card>.primary-btn{right:18px;bottom:18px}.story-btn{left:18px;bottom:29px;padding:8px 10px}.text-btn{display:none}.game-layout{grid-template-columns:1fr}.event-visual{min-height:200px}.story-dialog{padding:24px 17px}.story-route div{grid-template-columns:38px 100px 1fr;padding:9px}.story-route small{font-size:10px}}
 
 /* v6 — iPhone / touch-first layout */
 @media (max-width: 600px) {
@@ -317,14 +315,11 @@ label>span{color:#214c80}.start-card>.primary-btn{position:absolute;z-index:6;ri
   .card { border-width: 2px; box-shadow: 0 0 0 2px #073d85, 0 8px 22px rgba(0,24,69,.32); border-radius: 18px; }
 
   .start-card { min-height: 0; display: flex; flex-direction: column; padding: 0 0 16px; background-position: 60% center; }
-  .start-hud { order: 0; width: 100%; height: 48px; flex: 0 0 auto; padding: 0 8px; gap: 6px; font-size: 11px; }
-  .start-hud span { padding: 5px 8px; }
-  .start-hud b { font-size: 17px; }
   .hero-copy { order: 1; position: relative; inset: auto; width: 100%; max-width: none; padding: 24px 18px 12px; }
   .hero-copy .tag { margin-bottom: 10px; padding: 6px 10px; font-size: 11px; }
   .hero-copy h2 { max-width: 270px; font-size: clamp(31px, 9.2vw, 38px); line-height: 1.08; }
   .hero-copy > p:last-child { max-width: 250px; margin: 14px 0 0; font-size: 12px; line-height: 1.65; }
-  .hero-player { right: -38px; top: 118px; width: 210px; height: 290px; transform: scale(.52); transform-origin: top right; opacity: .96; }
+  .hero-player { right: -38px; top: 70px; width: 210px; height: 290px; transform: scale(.52); transform-origin: top right; opacity: .96; }
   .mode-dock { order: 2; position: relative; inset: auto; width: 100%; justify-content: center; gap: 7px; margin: 12px 0 14px; }
   .mode-dock span { width: 54px; height: 52px; padding-top: 4px; font-size: 19px; }
   .mode-dock b { font-size: 9px; }
@@ -589,7 +584,7 @@ label>span{color:#214c80}.start-card>.primary-btn{position:absolute;z-index:6;ri
   .brand .eyebrow { margin-left: 5px; font-size: 7px; }
   .brand h1 { font-size: clamp(25px, 8.1vw, 31px); -webkit-text-stroke-width: 1.5px; text-shadow: 2px 2px 0 #fff, 4px 4px 0 #06377f; }
   .logo-ribbon { left: 8px; bottom: -4px; font-size: 6px; }
-  .hero-player { right: -38px; top: 109px; width: 205px; height: 252px; transform: rotate(3deg); opacity: 1; }
+  .hero-player { right: -38px; top: 61px; width: 205px; height: 252px; transform: rotate(3deg); opacity: 1; }
   .hero-copy h2 { max-width: 235px; font-size: clamp(29px, 8.7vw, 35px); }
   .hero-copy > p:last-child { max-width: 220px; }
   .mode-dock { max-width: 280px; flex-wrap: wrap; gap: 9px 7px; margin: 8px auto 14px; }
