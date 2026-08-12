@@ -15,13 +15,13 @@
     const countCfg=balance.count||{},hittersCount=(batter.balls>=2&&batter.strikes<2?(countCfg.hittersCount??.045):0)+(batter.balls===3&&batter.strikes===1?(countCfg.threeOne??.035):0),pitchersCount=batter.strikes===2&&batter.balls<3?(countCfg.pitchersCount??-.055):0,fullCount=batter.balls===3&&batter.strikes===2?(countCfg.fullCount??.018):0,count=hittersCount+pitchersCount+fullCount;
     const matchup=fast?(batter.fast||0):breaking?(batter.breaking||0):0,hidden=(50-stats.spirit)/900-(stats.luck-35)/1300,healthPenalty=Math.max(0,(70-stats.health)/450);
     const hit=Math.max(balance.battingAverage?.min??.19,Math.min(balance.battingAverage?.max??.64,x.hit+batter.contact+(batter.dailyForm||0)+matchup+fatigue+count+hidden+healthPenalty));
-    const situation=batter.balls===3&&batter.strikes===2?"滿球數":hittersCount?"打者有利球數":pitchersCount?"投手有利球數":"球數平衡";
+    const countSituation=batter.balls===3&&batter.strikes===2?"滿球數":hittersCount?"打者有利球數":pitchersCount?"投手有利球數":"球數平衡",situation=batter.lineupRole?`第 ${batter.lineupSpot} 棒 ${batter.lineupRole} · ${countSituation}`:countSituation;
     return {hit,ball:Math.max(balance.ballChance?.min??.14,Math.min(balance.ballChance?.max??.66,x.bb+(batter.patience||0)+(breaking?.08:fast?-.015:0)+fatigue+healthPenalty+(batter.balls===3?.055:0))),miss:x.k-(batter.contact||0)*.35,note:situation};
   }
   function createBatter(config,random,previous={}){
-    const types=config.batters||[],type=types[Math.floor(random()*types.length)],dailyForm=(random()-.5)*.08;
+    const types=config.batters||[],batterNumber=(previous.batters||0)+1,lineupSpot=((batterNumber-1)%9)+1,lineup=(config.lineupProfiles||[]).find(x=>x.spot===lineupSpot),preferred=(lineup?.preferredTypes||[]).map(id=>types.find(x=>x.id===id)).filter(Boolean),type=preferred.length&&random()<.65?preferred[Math.floor(random()*preferred.length)]:types[Math.floor(random()*types.length)],dailyForm=(random()-.5)*.08;
     if(!type)throw new Error("batters.config.js：沒有可用的打者類型");
-    return {balls:0,strikes:0,outs:previous.outs||0,runners:previous.runners||[false,false,false],inherited:previous.inherited||[false,false,false],runs:previous.runs||0,earnedRuns:previous.earnedRuns||0,hits:previous.hits||0,walks:previous.walks||0,ks:previous.ks||0,errors:previous.errors||0,batters:(previous.batters||0)+1,pitches:previous.pitches||0,dailyForm,...type,quote:type.quotes[Math.floor(random()*type.quotes.length)]};
+    return {...type,balls:0,strikes:0,outs:previous.outs||0,runners:previous.runners||[false,false,false],inherited:previous.inherited||[false,false,false],runs:previous.runs||0,earnedRuns:previous.earnedRuns||0,hits:previous.hits||0,walks:previous.walks||0,ks:previous.ks||0,errors:previous.errors||0,batters:batterNumber,pitches:previous.pitches||0,dailyForm,lineupSpot,lineupRole:lineup?.role||`${lineupSpot} 棒`,contact:(type.contact||0)+(lineup?.contactAdjustment||0),patience:(type.patience||0)+(lineup?.patienceAdjustment||0),homeRunChance:Math.max(.01,Math.min(.32,(lineup?.homeRunChance??.08)+(type.homeRunAdjustment||0))),quote:type.quotes[Math.floor(random()*type.quotes.length)]};
   }
   window.V47BaseballMatchEngine={pitchProfile,liveRisk,createBatter};
 })();

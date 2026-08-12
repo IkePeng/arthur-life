@@ -53,13 +53,19 @@
 
 ## 調整角色能力
 
-每位角色的 `initialStats` 都是隨機區間，例如：
+每位角色的四項可見 `initialStats` 統一由 10～30 隨機，例如：
 
 ```js
-power: {min: 28, max: 34}
+power: {min: 10, max: 30}
 ```
 
-玩家取名後才會隨機抽到一位角色，再從每項區間各自抽出初始值。七位角色不能由玩家選擇。
+玩家取名後才會隨機抽到一位角色，再從每項區間各自抽出初始值。七位角色不能由玩家選擇；角色差異由初始球種、特殊能力與隱藏能力形成。
+
+球速的能力點數與實際速度可在 `stats.config.js` 的 `speed.display.anchors` 調整。每個錨點的 `score` 是能力點數，`value` 是畫面顯示的 `km/h`；目前 50 點固定顯示 70 km/h、80 點固定顯示 150 km/h，其餘分數會在相鄰錨點間平順換算。
+
+變化球能力達到 50 點後的選球門檻與可選球種，在 `pitches.config.js` 的 `pitchLearning` 調整。`firstAt` 是第一次選球門檻，`every` 是往後間隔。
+
+打線第 1～9 棒的打擊率、耐心、全壘打率與偏好打者類型，在 `batters.config.js` 的 `lineupProfiles` 調整。隱藏特殊能力與連續投球門檻則放在 `abilities.config.js`。
 
 ## 安全檢查
 

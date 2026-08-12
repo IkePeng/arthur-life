@@ -17,4 +17,12 @@
     p("revival_sinker","復活伸卡球","fastball","生涯後期重新開發的下沉球。",-.055,.025,.05),
     p("160_fireball","160km火球","fastball","頂級極速球，揮空率極高但風險與負荷也高。",-.035,.105,.045)
   ];
+  c.pitchLearning = {
+    stat:"fielding",
+    firstAt:50,
+    every:10,
+    lastAt:100,
+    maxKnownPitches:10,
+    choices:["二縫線直球","切球","伸卡球","高速伸卡球","曲球","滑球","反向滑球","變速球","指叉球","SFF"]
+  };
 })(window.V47_CONFIG);

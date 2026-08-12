@@ -1,5 +1,5 @@
 (function () {
-  const allowed={event:["CHOOSE_EVENT","CONTINUE"],match:["THROW_PITCH","CONTINUE_MATCH"],skills:["ALLOCATE_SKILL","CONFIRM_SKILLS"],ending:["NEW_GAME"]};
+  const allowed={event:["CHOOSE_EVENT","CONTINUE"],match:["THROW_PITCH","CONTINUE_MATCH"],skills:["ALLOCATE_SKILL","CHOOSE_PITCH","CONFIRM_SKILLS"],ending:["NEW_GAME"]};
   const handlers=new Map();
   window.V47FlowController={
     can(phase,action){return (allowed[phase]||[]).includes(action);},
