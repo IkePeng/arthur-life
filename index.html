@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Zilla+Slab:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=8" />
+  <link rel="stylesheet" href="styles.css?v=9" />
 </head>
 <body>
   <div class="grain" aria-hidden="true"></div>
@@ -44,7 +44,7 @@
         <label>
           <span>守備位置</span>
           <select id="position" aria-label="守備位置">
-            <option value="投手" selected>投手｜先發右投</option>
+            <option value="投手" selected>投手｜投手養成</option>
           </select>
         </label>
         <label class="seed-field">
@@ -57,8 +57,11 @@
       </div>
 
       <button id="startBtn" class="primary-btn" type="button">踏上球場 <span>→</span></button>
-      <div class="mode-dock" aria-hidden="true">
-        <span>🏋️<b>練習</b></span><span>💤<b>休息</b></span><span>📈<b>能力</b></span><span>⚾<b>比賽</b></span>
+      <div class="mode-dock" aria-label="選擇鳥投手">
+        <button class="bird-option active" type="button" data-bird="18" aria-pressed="true"><img src="assets/bird-pitcher.webp?v=2" alt=""><b>18 主角</b></button>
+        <button class="bird-option" type="button" data-bird="21" aria-pressed="false"><img src="assets/bird-lefty-21.webp" alt=""><b>21 左投</b></button>
+        <button class="bird-option" type="button" data-bird="36" aria-pressed="false"><img src="assets/bird-sidearm-36.webp" alt=""><b>36 側投</b></button>
+        <button class="bird-option" type="button" data-bird="99" aria-pressed="false"><img src="assets/bird-closer-99.webp" alt=""><b>99 終結</b></button>
       </div>
       <button id="storyBtn" class="story-btn" type="button">查看投手篇故事線</button>
       <p class="fine-print">遊戲會自動保存在此裝置</p>
@@ -161,6 +164,6 @@
       <p id="copyHint" class="fine-print"></p>
     </section>
   </main>
-  <script src="game.js?v=7"></script>
+  <script src="game.js?v=9"></script>
 </body>
 </html>

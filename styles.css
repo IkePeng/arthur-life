@@ -498,6 +498,31 @@ label>span{color:#214c80}.start-card>.primary-btn{position:absolute;z-index:6;ri
   filter: blur(5px);
 }
 
+.mode-dock { align-items: flex-end; }
+.mode-dock .bird-option {
+  width: 72px;
+  height: 78px;
+  display: grid;
+  grid-template-rows: 55px 17px;
+  place-items: center;
+  padding: 0 3px 3px;
+  overflow: hidden;
+  color: #fff;
+  background: linear-gradient(#e8f8ff, #8fd2ff);
+  border: 3px solid #fff;
+  outline: 2px solid #063a7c;
+  border-radius: 50% 50% 15px 15px;
+  box-shadow: 0 5px 0 #06367b;
+  transition: transform .16s, filter .16s;
+}
+.mode-dock .bird-option img { width: 62px; height: 58px; object-fit: contain; filter: drop-shadow(0 2px 1px rgba(0,25,55,.3)); }
+.mode-dock .bird-option b { font-size: 9px; line-height: 1; white-space: nowrap; color: #073b82; }
+.mode-dock .bird-option.active { outline-color: #ffbe22; box-shadow: 0 5px 0 #d65b14, 0 0 0 4px #ffe24e; transform: translateY(-5px); }
+.mode-dock .bird-option:active { transform: translateY(1px); }
+.avatar { padding: 2px; background: linear-gradient(#effaff,#9dd7ff); overflow: hidden; }
+.avatar img { width: 100%; height: 100%; object-fit: contain; }
+.avatar::after { display: none; }
+
 @media (max-width: 600px) {
   .brand { width: calc(100% - 48px); min-height: 82px; padding: 5px 16px 13px 7px; margin-bottom: 2px; gap: 7px; }
   .brand::before { inset: 7px 0 13px 23px; border-width: 3px; box-shadow: 4px 5px 0 #032d70; }
@@ -511,6 +536,10 @@ label>span{color:#214c80}.start-card>.primary-btn{position:absolute;z-index:6;ri
   .hero-player { right: -38px; top: 109px; width: 205px; height: 252px; transform: rotate(3deg); opacity: 1; }
   .hero-copy h2 { max-width: 235px; font-size: clamp(29px, 8.7vw, 35px); }
   .hero-copy > p:last-child { max-width: 220px; }
+  .mode-dock { gap: 6px; margin-top: 8px; }
+  .mode-dock .bird-option { width: 59px; height: 66px; grid-template-rows: 45px 15px; border-width: 2px; outline-width: 1px; }
+  .mode-dock .bird-option img { width: 51px; height: 48px; }
+  .mode-dock .bird-option b { font-size: 8px; }
 }
 
 @media (max-width: 360px) {
