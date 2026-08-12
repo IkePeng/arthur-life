@@ -20,6 +20,7 @@
 | 每年回合、技能點、30 歲後衰退與強制退休 | `progression.config.js` |
 | 強化成功率範圍 | `training.config.js` |
 | 中職、日職、美職的能力與球探評分門檻 | `scouting.config.js` |
+| SS～E 綜合評價分數區間 | `ratings.config.js` |
 
 ## 寫一個關卡
 

@@ -19,7 +19,9 @@
     (c.storyEvents||[]).forEach((e,i)=>checkEvent(e,`storyEvents[${i}]`));(c.annualEvents||[]).forEach((e,i)=>checkEvent(e,`annualEvents[${i}]`));(c.extraRoundEvents||[]).forEach((e,i)=>checkEvent(e,`extraRoundEvents[${i}]`));(c.lifeEvents||[]).forEach((e,i)=>checkEvent(e,`lifeEvents[${i}]`));Object.entries(c.originOpportunities||{}).forEach(([id,e])=>{assert((c.characters||[]).some(x=>x.id===id),`originOpportunities：未知角色 ${id}`,errors);checkEvent(e,`originOpportunities.${id}`);});
     (c.batters||[]).forEach(b=>{assert(Array.isArray(b.quotes)&&b.quotes.length,`batters.${b.id}：至少需要一句對白`,errors);assert(Number.isFinite(b.contact),`batters.${b.id}：缺少 contact`,errors);assert(b.patience===undefined||Number.isFinite(b.patience),`batters.${b.id}：patience 必須是數字`,errors);});
     assert(c.baseballRules?.strikesPerOut===3&&c.baseballRules?.ballsPerWalk===4&&c.baseballRules?.outsPerHalfInning===3,"baseball-rules.config.js：棒球基本規則不完整",errors);
-    assert((c.scouting?.leagues||[]).every(x=>Number.isFinite(x.anyStatAtLeast)),"scouting.config.js：邀約能力門檻不完整",errors);
+    const gradeIds=new Set((c.ratings?.grades||[]).map(x=>x.id));
+    assert(gradeIds.has("SS")&&gradeIds.has("S")&&gradeIds.has("A")&&gradeIds.has("B"),"ratings.config.js：評價等級不完整",errors);
+    assert((c.scouting?.leagues||[]).every(x=>gradeIds.has(x.minOverallGrade)),"scouting.config.js：邀約綜合評價門檻不完整",errors);
     if(errors.length)throw new Error(`v47 設定檔驗證失敗\n${errors.map((x,i)=>`${i+1}. ${x}`).join("\n")}`);
     return true;
   }

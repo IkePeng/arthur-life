@@ -14,7 +14,7 @@ const birdRoster=Object.fromEntries(Object.entries(legacyBirdRoster).map(([id,ol
 let selectedBird = null;
 
 const statLabels = Object.fromEntries((v47.stats||[]).map(x=>[x.id,x.name]));
-const proAbilityRequirements=Object.fromEntries((v47.scouting?.leagues||[]).map(x=>[x.id,x.anyStatAtLeast]));
+const proAbilityRequirements=Object.fromEntries((v47.scouting?.leagues||[]).map(x=>[x.id,x.minOverallGrade]));
 const legacyChapters = [
   { name: "菜鳥的夏天", place: "國中一年級 · 青葉中學", age: 13, intro:"你從一個連背號都沒有的新人開始。這三年，每一顆球都在替高中之路累積籌碼。", transition:"完成國中三年養成，收到高中球隊邀請" },
   { name: "甲子園之路", place: "高中二年級 · 海風高中", age: 17, intro:"國中畢業後，你離開熟悉的球場。高中更重的訓練、更強的打者，開始把天賦磨成真正能力。", transition:"高中畢業，球探報告與升學邀請同時寄達" },
@@ -257,14 +257,14 @@ function selectCurrentEvent(){
 
 function careerOfferEvent(){
   const year=(state.stageYear||0)+1;if(state.careerAssessment?.age===state.age)return state.careerAssessment.event;
-  const assessment=window.V47ScoutingEngine.evaluate(v47,state,year),bestAbility=assessment.bestAbility,offers=assessment.offers.map(league=>[league.offerText,{...league.effects},`至少一項能力達到 ${league.anyStatAtLeast}。${league.result}`]);
+  const assessment=window.V47ScoutingEngine.evaluate(v47,state,year),offers=assessment.offers.map(league=>[league.offerText,{...league.effects},league.result]);
   const continueChoices=[
     ["留在大學再磨練一年",{contact:5,fielding:4,spirit:3,health:-2},"你暫緩進入職業，下一年將帶著更完整的投球內容重新接受評估。"],
     ["加入國家培訓隊增加曝光",{fame:5,fans:1200,power:3,health:-4},"更多球探看見你，但密集賽程也增加身體負擔。",.64],
     ["休養並重整投球機制",{health:8,contact:4,speed:-1},"你犧牲一年的曝光，換取更健康而穩定的身體。"]
   ];
   if(year>=4){continueChoices.splice(0,continueChoices.length,["畢業後加入獨立聯盟",{careerPath:"amateur",spirit:6,health:4,fame:2},"正式選秀沒有結果，你從沒有保證的舞台累積實戰。"],["加入業餘成棒隊等待補選",{careerPath:"amateur",contact:5,health:3,fame:3},"你一邊工作一邊比賽，繼續等待球探回頭。"],["轉任培訓隊投手繼續養成",{careerPath:"amateur",fielding:5,spirit:5},"你延長養成期，保留再次挑戰職業的可能。"]);}
-  const report=offers.length?`球探評估完成：最高單項 ${bestAbility}，今年收到 ${offers.length} 份職業機會。${assessment.targetText}。沒有出現的邀請，代表實戰、球探評價或其他隱藏條件仍不足。`:`球探評估完成：最高單項 ${bestAbility}，今年沒有球隊提出正式邀請。${assessment.targetText}；你可以再養成一年重新接受評估。`;
+  const report=offers.length?`球探評估完成：綜合評價 ${assessment.overallGrade}（${assessment.overall} 分），今年收到 ${offers.length} 份職業機會。${assessment.targetText}。沒有出現的邀請，代表實戰、球探評價或其他隱藏條件仍不足。`:`球探評估完成：綜合評價 ${assessment.overallGrade}（${assessment.overall} 分），今年沒有球隊提出正式邀請。${assessment.targetText}；你可以再養成一年重新接受評估。`;
   const event={tag:`第四章 · ${state.age} 歲評估`,title:offers.length?"球隊的邀請函":"選秀會沒有喊到名字",text:report,choices:offers.length?[...offers,continueChoices[0]]:continueChoices};state.careerAssessment={age:state.age,event};return event;
 }
 
@@ -524,7 +524,7 @@ function applyAging(){
 }
 
 function overallScore() { const s=state.stats; return Math.round((s.power+s.contact+s.speed+s.fielding+s.spirit+s.health)/6); }
-function grade(n) { return n>=82?'S':n>=70?'A':n>=57?'B':n>=44?'C':n>=32?'D':'E'; }
+function grade(n) { return (v47.ratings?.grades||[{id:"SS",min:92},{id:"S",min:82},{id:"A",min:70},{id:"B",min:57},{id:"C",min:44},{id:"D",min:32},{id:"E",min:0}]).find(x=>n>=x.min)?.id||"E"; }
 
 function render() {
   const ch=chapters[state.chapter], bird=birdRoster[state.bird], careerPlace=state.chapter>=4?`${currentLeague()} · ${schoolYearLabel()}`:schoolYearLabel(); $("#displayName").textContent=state.name; $("#playerPosition").textContent=`${state.position} · ${bird.label}`; $("#careerLine").textContent=`${state.age} 歲 · ${careerPlace} · ${bird.bonus}`; $("#avatar").innerHTML=`<img src="${bird.src}" alt="${bird.label}" onerror="this.onerror=null;this.src='assets/bird-heavy-88.webp?v=2'">`;
@@ -532,7 +532,7 @@ function render() {
   $("#stats").innerHTML=Object.entries(state.stats).filter(([k])=>!['spirit','health','luck'].includes(k)).map(([k,v])=>`<div class="stat"><div class="stat-head"><span>${statLabels[k]}</span><b>${v}</b></div><div class="stat-track"><i style="width:${Math.min(100,v)}%"></i></div></div>`).join("");
   $("#pitchList").innerHTML=state.pitches.map((p,i)=>`<span class="pitch-chip ${i===state.pitches.length-1&&state.pitches.length>1?'new':''}">${p}</span>`).join(""); $("#pitchCount").textContent=`${state.pitches.length} / 8`;
   $("#abilityList").innerHTML=(state.special||[]).map(x=>`<span class="ability-chip">★ ${x}</span>`).join("")||'<span class="ability-empty">尚未獲得</span>';
-  const best=Math.max(state.stats.power,state.stats.contact,state.stats.speed,state.stats.fielding),target=best<70?70:best<80?80:best<90?90:null;$("#proThreshold").innerHTML=state.chapter<1?"":target?`最高單項 <b>${best}</b>｜下一個職業門檻 <strong>${target}</strong>`:`最高單項 <b>${best}</b>｜已達美職能力門檻`;
+  const currentGrade=grade(overallScore()),leagues=v47.scouting?.leagues||[],rank=(v47.ratings?.grades||[]).map(x=>x.id),qualifies=required=>rank.indexOf(currentGrade)<=rank.indexOf(required),nextLeague=leagues.find(x=>!qualifies(x.minOverallGrade));$("#proThreshold").innerHTML=state.chapter<1?"":nextLeague?`綜合評價 <b>${currentGrade}</b>｜下一個職業門檻 <strong>${nextLeague.name} ${nextLeague.minOverallGrade}</strong>`:`綜合評價 <b>${currentGrade}</b>｜已達所有職業評價門檻`;
   $("#fameValue").textContent=state.fame; $("#moneyValue").textContent=state.money+" 萬"; $("#fansValue").textContent=state.fans>=10000?(state.fans/10000).toFixed(1)+"萬":state.fans;
   const seasonPhase=state.turn>=state.chapterRounds?"季末比賽":state.turn===0?"季初養成":"賽季中";$("#chapterLabel").textContent=`${schoolYearLabel()} · ${seasonPhase}`; $("#seasonLabel").textContent=`${ch.name} · ${state.age} 歲`; $("#weekLabel").textContent=state.turn>=state.chapterRounds?"年度決戰":`第 ${state.turn+1} / ${state.chapterRounds} 回合`; $("#progressBar").style.width=`${Math.min(100,(state.turn+1)/(state.chapterRounds+1)*100)}%`;
   $("#timelineItems").innerHTML=state.timeline.slice(-8).map(x=>`<span class="timeline-item">● ${x}</span>`).join(""); $("#achievementCount").textContent=`${Math.max(0,state.timeline.length-1)} 個里程碑`;
