@@ -536,7 +536,7 @@ label>span{color:#214c80}.start-card>.primary-btn{position:absolute;z-index:6;ri
   .hero-player { right: -38px; top: 109px; width: 205px; height: 252px; transform: rotate(3deg); opacity: 1; }
   .hero-copy h2 { max-width: 235px; font-size: clamp(29px, 8.7vw, 35px); }
   .hero-copy > p:last-child { max-width: 220px; }
-  .mode-dock { gap: 6px; margin-top: 8px; }
+  .mode-dock { max-width: 210px; flex-wrap: wrap; gap: 9px 7px; margin: 8px auto 14px; }
   .mode-dock .bird-option { width: 59px; height: 66px; grid-template-rows: 45px 15px; border-width: 2px; outline-width: 1px; }
   .mode-dock .bird-option img { width: 51px; height: 48px; }
   .mode-dock .bird-option b { font-size: 8px; }
